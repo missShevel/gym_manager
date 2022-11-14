@@ -1,4 +1,4 @@
-import User from 'models/model';
+import User from 'models/user';
 import UserRepository from '../repositories/user.repository';
 
 interface ISignUpData {

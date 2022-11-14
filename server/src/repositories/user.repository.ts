@@ -1,6 +1,6 @@
 import database from 'database';
-import UserModel from '../models/model';
+import UserModel from '../models/user';
 
-const userRepository = database.getRepository(UserModel);
+const UserRepository = database.getRepository(UserModel);
 
-export default userRepository;
+export default UserRepository;

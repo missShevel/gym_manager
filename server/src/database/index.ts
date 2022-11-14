@@ -9,7 +9,7 @@ const database = new DataSource({
   password: environment.DB_PASSWORD,
   database: environment.DB_NAME,
 
-  synchronize: false,
+  synchronize: true,
   entities: ['src/models/*.ts'],
 
   migrationsTableName: 'TypeORM_migrations',
