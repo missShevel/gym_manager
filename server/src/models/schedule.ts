@@ -1,6 +1,11 @@
 import { ScheduleType } from 'absctracts/schedule';
 import {
-  Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, ManyToOne,
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  ManyToOne,
 } from 'typeorm';
 import User from './user';
 

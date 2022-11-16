@@ -17,4 +17,19 @@ export default class ClientService {
   public async create(data: ICreateClient) {
     return this.repository.save(data);
   }
+
+  public async getAll() {
+    return this.repository.find();
+  }
+
+  public async findById(id: string) {
+    return this.repository.findOne({
+      where: {
+        id
+      },
+      relations: {
+        avatar: true,
+      }
+    });
+  }
 }

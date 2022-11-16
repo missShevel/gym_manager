@@ -45,14 +45,14 @@ export default class User {
   // Relations
   @OneToOne(() => File)
   @JoinColumn({ name: 'avatar' })
-    avatar!: File;
+  avatar!: File;
 
   @OneToMany(() => Client, (client) => client.trainer)
   public clients!: Client[];
 
   @ManyToOne(() => Role, (role) => role.users)
   @JoinColumn()
-    role!: Role;
+  role!: Role;
 
   @OneToMany(() => Session, (session) => session.user)
   public sessions!: Session[];

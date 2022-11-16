@@ -46,7 +46,7 @@ export default class Client {
   // Relations
   @OneToOne(() => File)
   @JoinColumn({ name: 'avatar' })
-    avatar!: File;
+  avatar!: File;
 
   @ManyToOne(() => User, (trainer) => trainer.clients)
   public trainer!: User;

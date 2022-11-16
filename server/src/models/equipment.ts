@@ -1,5 +1,11 @@
 import {
-  Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToOne, JoinColumn,
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import File from './file';
 
@@ -31,7 +37,7 @@ export default class Equipment {
   // Relations
   @OneToOne(() => File)
   @JoinColumn({ name: 'avatar' })
-    avatar!: File;
+  avatar!: File;
 
   // Auto-generated dates
   @CreateDateColumn({ name: 'createdAt' }) 'createdAt': Date;

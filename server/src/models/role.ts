@@ -1,6 +1,4 @@
-import {
-  Entity, Column, PrimaryColumn, OneToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import User from './user';
 
 @Entity('Roles')

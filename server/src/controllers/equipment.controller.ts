@@ -43,4 +43,41 @@ export default class EquipmentController {
       });
     }
   }
+
+  public async getAll(_req: Request, res: Response) {
+    try {
+      const responce = await this.service.getAll();
+      res.json({
+        data: responce,
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        error: {
+          message: error.message,
+        },
+      });
+    }
+  }
+
+  public async getById(req: Request, res: Response) {
+    try {
+      const schema = yup.object().shape({
+        id: yup.string().uuid().required(),
+      });
+      await schema.validate(req.params);
+      const equipment = await this.service.findById(req.params.id);
+      if (!equipment) {
+        throw new Error(`Equipment with id ${req.params.id} was not found`);
+      }
+      res.json({
+        data: equipment,
+      });
+    } catch (error: any) {
+      res.status(400).json({
+        error: {
+          message: error.message,
+        },
+      });
+    }
+  }
 }

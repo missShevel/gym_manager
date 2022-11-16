@@ -11,9 +11,10 @@ const app = express();
 app.use(parser.json());
 app.use('/api', router);
 
-db.initialize().then(() => {
-  console.log(`Connection to database is successful (${environment.DB_NAME})`);
-})
+db.initialize()
+  .then(() => {
+    console.log(`Connection to database is successful (${environment.DB_NAME})`);
+  })
   .catch((e) => {
     console.log('Connection to database failed: ', e);
   });
