@@ -1,0 +1,72 @@
+[
+  {
+    "id": "9fa7f1db-a753-428f-ae7e-12204d459f37",
+    "firstName": "Olya",
+    "lastName": "Shevel",
+    "email": "o.shevel@gmail.com",
+    "sex": "female",
+    "password": "admin_password",
+    "avatar": "f4bd260e-3f01-43df-ae09-2e07416c1fce",
+    "role": "ADMINISTRATOR"
+  },
+  {
+    "id": "4c48b0b3-1830-49cc-ac64-e977cfb60994",
+    "firstName": "Hillery",
+    "lastName": "Houseley",
+    "email": "hhouseley0@washingtonpost.com",
+    "sex": "male",
+    "password": "password1",
+    "avatar": "b5e6cda7-028c-423d-a59c-a772fbc02a8c",
+    "role": "MANAGER"
+  },
+  {
+    "id": "fc6b83b8-7c90-462c-a829-ce48403dbca5",
+    "firstName": "Hort",
+    "lastName": "Bifield",
+    "email": "hbifield1@aboutads.info",
+    "sex": "male",
+    "password": "password2",
+    "avatar": "2c9155f7-ea1e-4a47-823e-bae943522caa",
+    "role": "TRAINER"
+  },
+  {
+    "id": "86404e05-26c2-412a-9e57-a9e774d67b91",
+    "firstName": "Darill",
+    "lastName": "Daouze",
+    "email": "ddaouze2@mail.ru",
+    "sex": "female",
+    "password": "password3",
+    "avatar": "",
+    "role": "MANAGER"
+  },
+  {
+    "id": "3fa2c478-53fe-4031-8f69-01173de57552",
+    "firstName": "Malva",
+    "lastName": "Chater",
+    "email": "mchater3@hud.gov",
+    "sex": "female",
+    "password": "password4",
+    "avatar": "",
+    "role": "TRAINER"
+  },
+  {
+    "id": "9d9100aa-a27c-434d-803c-ffc5d5b47e4b",
+    "firstName": "Nanette",
+    "lastName": "Cromar",
+    "email": "ncromar4@mysql.com",
+    "sex": "male",
+    "password": "password5",
+    "avatar": "",
+    "role": "TRAINER"
+  },
+  {
+    "id": "74f6a67c-d894-4389-993a-593c37af748c",
+    "firstName": "Lucais",
+    "lastName": "Leopold",
+    "email": "lleopold5@sohu.com",
+    "sex": "female",
+    "password": "password6",
+    "avatar": "",
+    "role": "MANAGER"
+  }
+]

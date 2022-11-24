@@ -1,11 +1,5 @@
 import {
-  Entity,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
+  Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToOne, JoinColumn,
 } from 'typeorm';
 import File from './file';
 
@@ -32,12 +26,15 @@ export default class Equipment {
     type: 'varchar',
     nullable: true,
   })
-  public link!: string;
+  public link!: string | null;
 
   // Relations
-  @OneToOne(() => File)
+  @OneToOne(() => File, {
+    nullable: true,
+    cascade: true,
+  })
   @JoinColumn({ name: 'avatar' })
-  avatar!: File;
+    avatar!: File | null;
 
   // Auto-generated dates
   @CreateDateColumn({ name: 'createdAt' }) 'createdAt': Date;

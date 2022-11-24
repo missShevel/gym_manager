@@ -1,5 +1,6 @@
 import EquipmentRepository from '../repositories/equipment.repository';
 import File from 'models/file';
+import Equipment from 'models/equipment';
 
 interface ICreateEquipment {
   name: string;
@@ -8,6 +9,12 @@ interface ICreateEquipment {
   avatar?: File;
 }
 
+
+export interface IUpdateEquipment {
+  name?: string,
+  count?: number,
+  link?: string,
+}
 export default class EquipmentService {
   private repository = EquipmentRepository;
 
@@ -28,5 +35,23 @@ export default class EquipmentService {
         avatar: true,
       }
     });
+  }
+
+  public async updateEquipment(equipment: Equipment, data: IUpdateEquipment) {
+    const newEquipment = this.repository.merge(equipment, data);
+
+    return this.repository.save(newEquipment);
+  }
+
+  public async updateEquipmentAvatar(equipment: Equipment, avatar: File) {
+    return this.repository.save({
+      ...equipment,
+      avatar,
+    });
+  }
+
+
+  public async deleteEquipment(equipment: Equipment) {
+    return this.repository.remove(equipment);
   }
 }

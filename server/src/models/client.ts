@@ -17,15 +17,24 @@ export default class Client {
   @PrimaryGeneratedColumn('uuid')
   public id!: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: false,
+  })
   public firstName!: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: false,
+  })
   public lastName!: string;
 
   @Column({
     type: 'enum',
     enum: UserSex,
+    nullable: false,
     default: UserSex.MALE,
   })
   public sex!: UserSex;
@@ -33,23 +42,28 @@ export default class Client {
   @Column({
     type: 'enum',
     enum: UserStatus,
+    nullable: false,
     default: UserStatus.BEGGINER,
   })
   public status!: UserStatus;
 
   @Column({
     type: 'text',
+    nullable: false,
     default: '',
   })
   public details!: string;
 
   // Relations
-  @OneToOne(() => File)
+  @OneToOne(() => File, {
+    nullable: true,
+    cascade: true,
+  })
   @JoinColumn({ name: 'avatar' })
-  avatar!: File;
+    avatar!: File | null;
 
-  @ManyToOne(() => User, (trainer) => trainer.clients)
-  public trainer!: User;
+  @ManyToOne(() => User, (trainer) => trainer.clients, { nullable: true })
+  public trainer!: User | null;
 
   // Auto-generated dates
   @CreateDateColumn({ name: 'createdAt' }) 'createdAt': Date;

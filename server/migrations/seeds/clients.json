@@ -1,0 +1,72 @@
+[
+  {
+    "id": "8377d4e9-54d9-448a-8a73-0ee8c158a762",
+    "firstName": "Reider",
+    "lastName": "Stanislaw",
+    "sex": "male",
+    "status": "Begginer",
+    "details": "",
+    "avatar": "dc3834f1-b266-4ca1-8c55-f3fd6c2419d2",
+    "trainer": "fc6b83b8-7c90-462c-a829-ce48403dbca5"
+  },
+  {
+    "id": "5eba35f6-ffb8-416b-8c6a-8fe7489a7966",
+    "firstName": "Rad",
+    "lastName": "Crofts",
+    "sex": "female",
+    "status": "Medium",
+    "details": "Has some minor problems with heart",
+    "avatar": "",
+    "trainer": "fc6b83b8-7c90-462c-a829-ce48403dbca5"
+  },
+  {
+    "id": "baa1e4b9-1efb-46c9-a170-c565e5b9f34d",
+    "firstName": "Jessey",
+    "lastName": "Mapplethorpe",
+    "sex": "male",
+    "status": "Begginer",
+    "details": "Goal: fix posture",
+    "avatar": "",
+    "trainer": "3fa2c478-53fe-4031-8f69-01173de57552"
+  },
+  {
+    "id": "8780726f-e9e6-4e3b-8450-01cebd5d1162",
+    "firstName": "Ellery",
+    "lastName": "Curnnok",
+    "sex": "female",
+    "status": "Begginer",
+    "details": "",
+    "avatar": "0233d51b-6b14-4923-8680-bca819588467",
+    "trainer": "3fa2c478-53fe-4031-8f69-01173de57552"
+  },
+  {
+    "id": "bc3eecdb-ac7b-4bfe-a359-3279994764e3",
+    "firstName": "Daryl",
+    "lastName": "Brammer",
+    "sex": "male",
+    "status": "Professional",
+    "details": "",
+    "avatar": "",
+    "trainer": ""
+  },
+  {
+    "id": "8fa4faba-c74b-4780-b1e7-cbd429af72f2",
+    "firstName": "Katalin",
+    "lastName": "Covino",
+    "sex": "male",
+    "status": "Begginer",
+    "details": "",
+    "avatar": "",
+    "trainer": ""
+  },
+  {
+    "id": "6f14d36b-76ee-4869-bb9a-03f77ac2dada",
+    "firstName": "Jaymee",
+    "lastName": "MacGillivray",
+    "sex": "female",
+    "status": "Medium",
+    "details": "",
+    "avatar": "",
+    "trainer": "9d9100aa-a27c-434d-803c-ffc5d5b47e4b"
+  }
+]

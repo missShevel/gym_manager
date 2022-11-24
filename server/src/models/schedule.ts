@@ -1,11 +1,6 @@
 import { ScheduleType } from 'absctracts/schedule';
 import {
-  Entity,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  ManyToOne,
+  Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, ManyToOne,
 } from 'typeorm';
 import User from './user';
 
@@ -14,31 +9,49 @@ export default class Schedule {
   @PrimaryGeneratedColumn('uuid')
   public id!: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 200,
+    nullable: false,
+  })
   public name!: string;
-
-  @Column('date')
-  public startDate!: Date;
-
-  @Column('time')
-  public startTime!: string;
 
   @Column({
     type: 'date',
-    nullable: true,
+    nullable: false,
   })
-  public endDate!: Date;
+  public startDate!: Date;
 
   @Column({
     type: 'time',
     nullable: true,
   })
-  public endTime!: string;
+  public startTime!: string | null;
 
-  @Column('bool')
+  @Column({
+    type: 'date',
+    nullable: true,
+  })
+  public endDate!: Date | null;
+
+  @Column({
+    type: 'time',
+    nullable: true,
+  })
+  public endTime!: string | null;
+
+  @Column({
+    type: 'bool',
+    default: false,
+    nullable: false,
+  })
   public isAllDay!: boolean;
 
-  @Column('text')
+  @Column({
+    type: 'text',
+    default: '',
+    nullable: false,
+  })
   public details!: string;
 
   @Column({
@@ -48,12 +61,16 @@ export default class Schedule {
   })
   public type!: ScheduleType;
 
-  @Column('integer')
+  @Column({
+    type: 'integer',
+    default: 0,
+    nullable: false,
+  })
   public interval!: number;
 
   // Relations
-  @ManyToOne(() => User, (user) => user.schedules)
-  public trainer!: User;
+  @ManyToOne(() => User, (user) => user.schedules, { nullable: true })
+  public trainer!: User | null;
 
   // Auto-generated dates
   @CreateDateColumn({ name: 'createdAt' }) 'createdAt': Date;

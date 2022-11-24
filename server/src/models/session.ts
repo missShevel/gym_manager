@@ -1,11 +1,5 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
+  Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn,
 } from 'typeorm';
 import User from './user';
 
@@ -14,11 +8,14 @@ export default class Session {
   @PrimaryGeneratedColumn('uuid')
   public id!: string;
 
-  @Column('json')
+  @Column({
+    type: 'json',
+    nullable: false,
+  })
   public data!: object;
 
   // Relations
-  @ManyToOne(() => User, (user) => user.sessions)
+  @ManyToOne(() => User, (user) => user.sessions, { nullable: false })
   @JoinColumn({ name: 'userId' })
   public user!: User;
 

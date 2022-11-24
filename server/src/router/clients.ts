@@ -9,5 +9,6 @@ router.post('/', clientController.create.bind(clientController));
 router.get('/', clientController.getAll.bind(clientController));
 router.get('/:id', clientController.getById.bind(clientController));
 router.put('/:id', clientController.updateById.bind(clientController));
+router.delete('/:id', clientController.deleteById.bind(clientController));
 
 export default router;

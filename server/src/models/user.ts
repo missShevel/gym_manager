@@ -22,14 +22,25 @@ export default class User {
   @PrimaryGeneratedColumn('uuid')
   public id!: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: false,
+  })
   public firstName!: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: false,
+  })
   public lastName!: string;
 
   @Index({ unique: true })
-  @Column()
+  @Column({
+    type: 'varchar',
+    nullable: false,
+  })
   public email!: string;
 
   @Column({
@@ -39,25 +50,36 @@ export default class User {
   })
   public sex!: UserSex;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 150,
+    nullable: false,
+  })
   public passwordHash!: string;
 
   // Relations
-  @OneToOne(() => File)
+  @OneToOne(() => File, {
+    nullable: true,
+    cascade: true,
+  })
   @JoinColumn({ name: 'avatar' })
-  avatar!: File;
+    avatar!: File | null;
 
   @OneToMany(() => Client, (client) => client.trainer)
   public clients!: Client[];
 
-  @ManyToOne(() => Role, (role) => role.users)
+  @ManyToOne(() => Role, (role) => role.users, { nullable: false })
   @JoinColumn()
-  role!: Role;
+    role!: Role;
 
-  @OneToMany(() => Session, (session) => session.user)
+  @OneToMany(() => Session, (session) => session.user, {
+    cascade: true,
+  })
   public sessions!: Session[];
 
-  @OneToMany(() => Schedule, (schedule) => schedule.trainer)
+  @OneToMany(() => Schedule, (schedule) => schedule.trainer, {
+    cascade: true,
+  })
   public schedules!: Schedule[];
 
   // Auto-generated dates
