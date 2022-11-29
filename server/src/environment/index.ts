@@ -9,6 +9,7 @@ const environment = envalid.cleanEnv(process.env, {
   DB_PASSWORD: envalid.str(),
   DB_NAME: envalid.str(),
   DB_HOST: envalid.str(),
+  COOKIE_EXPIRE: envalid.num(),
 });
 
 export default environment;
