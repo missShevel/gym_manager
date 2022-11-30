@@ -33,10 +33,12 @@ export default class UserController {
       res.json({
         data: user,
       });
-    } catch (error) {
-      console.log(error);
-
-      res.status(400).json({ error });
+    } catch (error: any) {
+      res.status(400).json({
+        error: {
+          message: error.message,
+        },
+      });
     }
   }
 
@@ -77,10 +79,12 @@ export default class UserController {
       res.json({
         data: createdUser,
       });
-    } catch (error) {
-      console.log(error);
-
-      res.status(400).json({ error });
+    } catch (error: any) {
+      res.status(400).json({
+        error: {
+          message: error.message,
+        },
+      });
     }
   }
 }

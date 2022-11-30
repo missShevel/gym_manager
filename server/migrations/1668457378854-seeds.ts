@@ -1,4 +1,6 @@
 /* eslint-disable class-methods-use-this */
+import fse from 'fs-extra';
+import path from 'path';
 import { MigrationInterface, QueryRunner } from 'typeorm';
 import RoleRepository from 'repositories/role.repository';
 import FileRepository from 'repositories/file.repository';
@@ -13,6 +15,9 @@ import files from './seeds/files.json';
 import equipments from './seeds/equipments.json';
 import users from './seeds/users.json';
 import clients from './seeds/clients.json';
+
+const seedsFolder = path.join(__dirname, 'seeds', 'files');
+const resultFolder = path.join(__dirname, '../', 'files');
 
 export class Seeds1668457378854 implements MigrationInterface {
   public async up(): Promise<void> {
@@ -40,9 +45,14 @@ export class Seeds1668457378854 implements MigrationInterface {
       trainer: c.trainer ? await UserRepository.findOneBy({ id: c.trainer }) : undefined,
     })));
     await ClientRepository.save(mappedClients);
+
+    await fse.ensureDir(resultFolder);
+    await fse.copy(seedsFolder, resultFolder);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await fse.ensureDir(resultFolder);
+    await fse.remove(resultFolder);
     await queryRunner.query(`TRUNCATE TABLE "Files" CASCADE;
       TRUNCATE TABLE "Roles" CASCADE;
       TRUNCATE TABLE "Schedules" CASCADE;

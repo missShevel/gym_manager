@@ -12,7 +12,7 @@ export default class Session {
     type: 'json',
     nullable: false,
   })
-  public data!: object;
+  public data!: Record<string, any>;
 
   // Relations
   @ManyToOne(() => User, (user) => user.sessions, { nullable: false })

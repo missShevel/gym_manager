@@ -1,9 +1,9 @@
 import environment from 'environment';
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import moment from 'moment';
 import SessionRepository from 'repositories/session.repository';
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: Request, res: Response) => {
   try {
     const { sessionId }: { sessionId: string | undefined } = req.cookies;
 
@@ -19,11 +19,11 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     if (diff > environment.COOKIE_EXPIRE) throw new Error('Session expired');
 
     res.locals.user = user;
-    next();
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
     res.status(400).json({
-      error,
+      error: {
+        message: error.message,
+      },
     });
   }
 };
