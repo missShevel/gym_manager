@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import environment from 'environment';
-import { type Request, type Response } from 'express';
+import { type Request, type Response, type NextFunction } from 'express';
 import UserService from 'services/user.service';
 import {
   RolePermissions,
@@ -12,15 +12,17 @@ import {
 import FileService from 'services/file.service';
 import { encrypt, isAllowed } from 'helpers';
 import RoleService from 'services/role.service';
+import ApiError from 'helpers/ApiError';
+import BaseController from './Base';
 
-export default class UserController {
+export default class UserController extends BaseController {
   private service = new UserService();
 
   private fileService = new FileService();
 
   private roleService = new RoleService();
 
-  public async signIn(req: Request, res: Response) {
+  public async signIn(req: Request, res: Response, next: NextFunction) {
     try {
       const { user, session } = await this.service.signIn(req.body);
 
@@ -33,16 +35,12 @@ export default class UserController {
       res.json({
         data: user,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async create(req: Request, res: Response) {
+  public async create(req: Request, res: Response, next: NextFunction) {
     const { user } = res.locals;
 
     try {
@@ -64,7 +62,7 @@ export default class UserController {
         }
       }
       const requiredPermission = RolePermissions[body.role as keyof TRolePermissions].add;
-      if (!isAllowed(user, requiredPermission)) throw new Error('Forbidden');
+      if (!isAllowed(user, requiredPermission)) throw new ApiError('Forbidden', 400);
       const role = await this.roleService.findByIdOrFail(body.role as string);
       const createdUser = await this.service.create({
         firstName: body.firstName,
@@ -79,12 +77,8 @@ export default class UserController {
       res.json({
         data: createdUser,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 }

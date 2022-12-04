@@ -1,5 +1,6 @@
 import { UserSex } from 'absctracts';
 import { areEqual } from 'helpers';
+import ApiError from 'helpers/ApiError';
 import File from 'models/file';
 import Role from 'models/role';
 import SessionRepository from 'repositories/session.repository';
@@ -37,12 +38,12 @@ export default class UserService {
     });
 
     if (!existingUser) {
-      throw new Error("User with such credentials doesn't exist");
+      throw new ApiError("User with such credentials doesn't exist", 400);
     }
 
     const passwordsEqual = await areEqual(data.password, existingUser.passwordHash);
     if (!passwordsEqual) {
-      throw new Error('Wrong password');
+      throw new ApiError('Wrong password', 400);
     }
 
     const session = await this.sessionRepository.save({
@@ -64,7 +65,7 @@ export default class UserService {
     });
 
     if (existingUser) {
-      throw new Error('User with such credentials already exists');
+      throw new ApiError('User with such credentials already exists', 400);
     }
 
     return this.repository.save(data);

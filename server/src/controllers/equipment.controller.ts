@@ -1,15 +1,17 @@
 import { IUpdateEquipment } from './../services/equipment.service';
 import * as yup from 'yup';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import EquipmentService from 'services/equipment.service';
 import FileService from 'services/file.service';
+import BaseController from './Base';
+import ApiError from 'helpers/ApiError';
 
-export default class EquipmentController {
+export default class EquipmentController extends BaseController {
   private service = new EquipmentService();
 
   private fileService = new FileService();
 
-  public async create(req: Request, res: Response) {
+  public async create(req: Request, res: Response, next: NextFunction) {
     try {
       // 2. validation (req.body)
       const schema = yup.object().shape({
@@ -23,7 +25,7 @@ export default class EquipmentController {
       if (req.body.fileId) {
         avatar = await this.fileService.findById(req.body.fileId);
         if (!avatar) {
-          throw new Error(`Avatar with id ${req.body.fileId} was not found`);
+          throw new ApiError(`Avatar with id ${req.body.fileId} was not found`, 400);
         }
       }
       const responce = await this.service.create({
@@ -36,31 +38,23 @@ export default class EquipmentController {
       res.json({
         data: responce,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async getAll(_req: Request, res: Response) {
+  public async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const responce = await this.service.getAll();
       res.json({
         data: responce,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async getById(req: Request, res: Response) {
+  public async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const schema = yup.object().shape({
         id: yup.string().uuid().required(),
@@ -68,27 +62,23 @@ export default class EquipmentController {
       await schema.validate(req.params);
       const equipment = await this.service.findById(req.params.id);
       if (!equipment) {
-        throw new Error(`Equipment with id ${req.params.id} was not found`);
+        throw new ApiError(`Equipment with id ${req.params.id} was not found`, 400);
       }
       res.json({
         data: equipment,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async updateById(req: Request, res: Response) {
+  public async updateById(req: Request, res: Response, next: NextFunction) {
     try {
       const equipmentId = req.params.id;
       const equipment = await this.service.findById(equipmentId);
 
       if (!equipment) {
-        throw new Error(`Equipment with id ${equipmentId} was not found`);
+        throw new ApiError(`Equipment with id ${equipmentId} was not found`, 400);
       }
       const schema = yup.object().shape({
         name: yup.string().min(2).max(200),
@@ -99,11 +89,11 @@ export default class EquipmentController {
       await schema.validate(req.body);
       const { fileId } = req.body;
       let file;
-      if(fileId) file = await this.fileService.findById(fileId);
+      if (fileId) file = await this.fileService.findById(fileId);
       console.log(file);
 
-      if ( !file  ) {
-        throw new Error(`File with id ${fileId} was not found`);
+      if (!file) {
+        throw new ApiError(`File with id ${fileId} was not found`, 400);
       }
       const updateData: IUpdateEquipment = {
         name: req.body.name,
@@ -119,21 +109,17 @@ export default class EquipmentController {
       res.json({
         data: updatedEquipment,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async deleteById(req: Request, res: Response) {
+  public async deleteById(req: Request, res: Response, next: NextFunction) {
     try {
       const equipmentId = req.params.id;
       const equipment = await this.service.findById(equipmentId);
       if (!equipment) {
-        throw new Error(`Client with id ${equipmentId} was not found`);
+        throw new ApiError(`Client with id ${equipmentId} was not found`);
       }
 
       const removedEquipment = await this.service.deleteEquipment(equipment);
@@ -142,13 +128,8 @@ export default class EquipmentController {
         data: removedEquipment,
         deleted: true,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
-
 }

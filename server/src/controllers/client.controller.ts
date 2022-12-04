@@ -1,15 +1,17 @@
 import * as yup from 'yup';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import ClientService, { IUpdateClient } from 'services/client.service';
 import { USER_STATUSES } from 'absctracts/user';
 import FileService from 'services/file.service';
+import BaseController from './Base';
+import ApiError from 'helpers/ApiError';
 
-export default class ClientController {
+export default class ClientController extends BaseController {
   private service = new ClientService();
 
   private fileService = new FileService();
 
-  public async create(req: Request, res: Response) {
+  public async create(req: Request, res: Response, next: NextFunction) {
     try {
       // 2. validation (req.body)
       const schema = yup.object().shape({
@@ -25,7 +27,7 @@ export default class ClientController {
       if (req.body.fileId) {
         avatar = await this.fileService.findById(req.body.fileId);
         if (!avatar) {
-          throw new Error(`Avatar with id ${req.body.fileId} was not found`);
+          throw new ApiError(`Avatar with id ${req.body.fileId} was not found`, 400);
         }
       }
       const responce = await this.service.create({
@@ -40,32 +42,24 @@ export default class ClientController {
       res.json({
         data: responce,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async getAll(_req: Request, res: Response) {
+  public async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const responce = await this.service.getAll();
 
       res.json({
         data: responce,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async getById(req: Request, res: Response) {
+  public async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const schema = yup.object().shape({
         id: yup.string().uuid().required(),
@@ -78,21 +72,17 @@ export default class ClientController {
       res.json({
         data: client,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async updateById(req: Request, res: Response) {
+  public async updateById(req: Request, res: Response, next: NextFunction) {
     try {
       const clientId = req.params.id;
       const client = await this.service.findById(clientId);
       if (!client) {
-        throw new Error(`Client with id ${clientId} was not found`);
+        throw new ApiError(`Client with id ${clientId} was not found`, 400);
       }
       const schema = yup.object().shape({
         firstName: yup.string(),
@@ -107,7 +97,7 @@ export default class ClientController {
       const file = await this.fileService.findById(fileId);
 
       if (!file) {
-        throw new Error(`File with id ${fileId} was not found`);
+        throw new ApiError(`File with id ${fileId} was not found`, 400);
       }
       const updateData: IUpdateClient = {
         firstName: req.body.firstName,
@@ -124,21 +114,17 @@ export default class ClientController {
       res.json({
         data: updatedClient,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 
-  public async deleteById(req: Request, res: Response) {
+  public async deleteById(req: Request, res: Response, next: NextFunction) {
     try {
       const clientId = req.params.id;
       const client = await this.service.findById(clientId);
       if (!client) {
-        throw new Error(`Client with id ${clientId} was not found`);
+        throw new ApiError(`Client with id ${clientId} was not found`, 400);
       }
 
       const removedClient = await this.service.deleteClient(client);
@@ -147,12 +133,8 @@ export default class ClientController {
         data: removedClient,
         deleted: true,
       });
-    } catch (error: any) {
-      res.status(400).json({
-        error: {
-          message: error.message,
-        },
-      });
+    } catch (error) {
+      this.sendError(next, error);
     }
   }
 }

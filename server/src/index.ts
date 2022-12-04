@@ -4,13 +4,10 @@ import parser from 'body-parser';
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
-
-
-
-
 import environment from 'environment';
 import db from 'database';
 import router from 'router';
+import errorHandling from 'middlewares/errorHandling';
 
 const app = express();
 
@@ -20,6 +17,7 @@ app.use(cors({
   origin: '*',
 }));
 app.use('/api', router);
+app.use(errorHandling);
 
 db.initialize()
   .then(() => {
