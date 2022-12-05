@@ -81,4 +81,40 @@ export default class UserController extends BaseController {
       this.sendError(next, error);
     }
   }
+
+  public async getMe(_req: Request, res: Response, next: NextFunction) {
+    try {
+
+      res.json(res.locals.user)
+
+    } catch (error) {
+      this.sendError(next, error);
+    }
+  }
+
+  public async logOut(req: Request, res: Response, next: NextFunction) {
+    try {
+
+    const { sessionId }: { sessionId: string } = req.cookies;
+
+     const user = await this.service.logOut(sessionId);
+
+     req.cookies = [];
+
+     res.json({
+       user,
+       signedOut = "true",
+     });
+
+    } catch( error ) {
+      this.sendError(next, error);
+    }
+
+
+
+
+
+
+
+  }
 }

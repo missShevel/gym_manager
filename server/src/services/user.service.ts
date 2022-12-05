@@ -70,4 +70,8 @@ export default class UserService {
 
     return this.repository.save(data);
   }
+
+  public async logOut(sessionId: string) {
+    return this.sessionRepository.delete({id: sessionId})
+  }
 }
