@@ -1,5 +1,9 @@
 import {
-  Entity, Column, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn,
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity('Files')

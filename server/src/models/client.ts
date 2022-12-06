@@ -60,7 +60,7 @@ export default class Client {
     cascade: true,
   })
   @JoinColumn({ name: 'avatar' })
-    avatar!: File | null;
+  avatar!: File | null;
 
   @ManyToOne(() => User, (trainer) => trainer.clients, { nullable: true })
   public trainer!: User | null;

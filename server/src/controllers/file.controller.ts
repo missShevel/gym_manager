@@ -12,7 +12,7 @@ export default class FileController extends BaseController {
   public async upload(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.file) throw new ApiError('No file provided', 400);
-      if (!await fse.pathExists(req.file.path)) throw new ApiError('No file was uploaded', 400);
+      if (!(await fse.pathExists(req.file.path))) throw new ApiError('No file was uploaded', 400);
       const ext = path.extname(req.file.path);
       const basename = path.parse(req.file.originalname).name;
       const id = path.parse(req.file.filename).name;

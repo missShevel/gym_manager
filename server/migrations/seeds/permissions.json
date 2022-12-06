@@ -57,13 +57,6 @@
   {
     "id": "TRAINER",
     "name": "Trainer",
-    "permissions": [
-      "view_clients",
-
-      "view_schedules_own",
-      "edit_schedules_own",
-
-      "view_equipments"
-    ]
+    "permissions": ["view_clients", "view_schedules_own", "edit_schedules_own", "view_equipments"]
   }
 ]

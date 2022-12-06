@@ -63,14 +63,14 @@ export default class User {
     cascade: true,
   })
   @JoinColumn({ name: 'avatar' })
-    avatar!: File | null;
+  avatar!: File | null;
 
   @OneToMany(() => Client, (client) => client.trainer)
   public clients!: Client[];
 
   @ManyToOne(() => Role, (role) => role.users, { nullable: false })
   @JoinColumn()
-    role!: Role;
+  role!: Role;
 
   @OneToMany(() => Session, (session) => session.user, {
     cascade: true,

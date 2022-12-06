@@ -10,4 +10,4 @@ export enum UserStatus {
 }
 
 export const USER_STATUSES = [UserStatus.BEGGINER, UserStatus.MEDIUM, UserStatus.PRO];
-export const USER_SEX = [UserSex.FEMALE, UserSex.MALE]
+export const USER_SEX = [UserSex.FEMALE, UserSex.MALE];

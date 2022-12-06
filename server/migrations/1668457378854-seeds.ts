@@ -22,28 +22,33 @@ const resultFolder = path.join(__dirname, '../', 'files');
 export class Seeds1668457378854 implements MigrationInterface {
   public async up(): Promise<void> {
     await FileRepository.save(files);
-    const mappedEquipments = await Promise.all(equipments.map(async (e) => ({
-      ...e,
-      avatar: e.avatar ? await FileRepository.findOneBy({ id: e.avatar }) : undefined,
-    }
-    )));
+    const mappedEquipments = await Promise.all(
+      equipments.map(async (e) => ({
+        ...e,
+        avatar: e.avatar ? await FileRepository.findOneBy({ id: e.avatar }) : undefined,
+      })),
+    );
     await EquipmentRepository.save(mappedEquipments);
     await RoleRepository.save(permissions);
-    const mappedUsers = await Promise.all(users.map(async (u) => ({
-      ...u,
-      sex: u.sex as UserSex,
-      passwordHash: await encrypt(u.password),
-      avatar: u.avatar ? await FileRepository.findOneBy({ id: u.avatar }) : undefined,
-      role: await RoleRepository.findOneBy({ id: u.role }) as Role,
-    })));
+    const mappedUsers = await Promise.all(
+      users.map(async (u) => ({
+        ...u,
+        sex: u.sex as UserSex,
+        passwordHash: await encrypt(u.password),
+        avatar: u.avatar ? await FileRepository.findOneBy({ id: u.avatar }) : undefined,
+        role: (await RoleRepository.findOneBy({ id: u.role })) as Role,
+      })),
+    );
     await UserRepository.save(mappedUsers);
-    const mappedClients = await Promise.all(clients.map(async (c) => ({
-      ...c,
-      sex: c.sex as UserSex,
-      status: c.status as UserStatus,
-      avatar: c.avatar ? await FileRepository.findOneBy({ id: c.avatar }) : undefined,
-      trainer: c.trainer ? await UserRepository.findOneBy({ id: c.trainer }) : undefined,
-    })));
+    const mappedClients = await Promise.all(
+      clients.map(async (c) => ({
+        ...c,
+        sex: c.sex as UserSex,
+        status: c.status as UserStatus,
+        avatar: c.avatar ? await FileRepository.findOneBy({ id: c.avatar }) : undefined,
+        trainer: c.trainer ? await UserRepository.findOneBy({ id: c.trainer }) : undefined,
+      })),
+    );
     await ClientRepository.save(mappedClients);
 
     await fse.ensureDir(resultFolder);

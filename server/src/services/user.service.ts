@@ -12,13 +12,13 @@ interface ISignInData {
 }
 
 interface ICreateData {
-  firstName: string
-  lastName: string
-  email: string,
-  sex?: UserSex,
-  passwordHash: string,
-  avatar?: File,
-  role: Role
+  firstName: string;
+  lastName: string;
+  email: string;
+  sex?: UserSex;
+  passwordHash: string;
+  avatar?: File;
+  role: Role;
 }
 
 export default class UserService {
@@ -69,9 +69,5 @@ export default class UserService {
     }
 
     return this.repository.save(data);
-  }
-
-  public async logOut(sessionId: string) {
-    return this.sessionRepository.delete({id: sessionId})
   }
 }

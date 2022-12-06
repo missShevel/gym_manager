@@ -2,21 +2,18 @@ import * as yup from 'yup';
 import environment from 'environment';
 import { type Request, type Response, type NextFunction } from 'express';
 import UserService from 'services/user.service';
-import {
-  RolePermissions,
-  ROLES,
-  TRolePermissions,
-  UserSex,
-  USER_SEX,
-} from 'absctracts';
+import { RolePermissions, ROLES, TRolePermissions, UserSex, USER_SEX } from 'absctracts';
 import FileService from 'services/file.service';
 import { encrypt, isAllowed } from 'helpers';
 import RoleService from 'services/role.service';
 import ApiError from 'helpers/ApiError';
 import BaseController from './Base';
+import SessionService from 'services/session.service';
 
 export default class UserController extends BaseController {
   private service = new UserService();
+
+  private sessionService = new SessionService();
 
   private fileService = new FileService();
 
@@ -84,9 +81,7 @@ export default class UserController extends BaseController {
 
   public async getMe(_req: Request, res: Response, next: NextFunction) {
     try {
-
-      res.json(res.locals.user)
-
+      res.json(res.locals.user);
     } catch (error) {
       this.sendError(next, error);
     }
@@ -94,27 +89,15 @@ export default class UserController extends BaseController {
 
   public async logOut(req: Request, res: Response, next: NextFunction) {
     try {
+      const { sessionId }: { sessionId: string } = req.cookies;
 
-    const { sessionId }: { sessionId: string } = req.cookies;
+      await this.sessionService.deleteById(sessionId);
 
-     const user = await this.service.logOut(sessionId);
+      res.clearCookie('sessionId');
 
-     req.cookies = [];
-
-     res.json({
-       user,
-       signedOut = "true",
-     });
-
-    } catch( error ) {
+      res.json({});
+    } catch (error) {
       this.sendError(next, error);
     }
-
-
-
-
-
-
-
   }
 }

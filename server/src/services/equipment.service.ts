@@ -9,11 +9,10 @@ interface ICreateEquipment {
   avatar?: File;
 }
 
-
 export interface IUpdateEquipment {
-  name?: string,
-  count?: number,
-  link?: string,
+  name?: string;
+  count?: number;
+  link?: string;
 }
 export default class EquipmentService {
   private repository = EquipmentRepository;
@@ -29,11 +28,11 @@ export default class EquipmentService {
   public async findById(id: string) {
     return this.repository.findOne({
       where: {
-        id
+        id,
       },
       relations: {
         avatar: true,
-      }
+      },
     });
   }
 
@@ -49,7 +48,6 @@ export default class EquipmentService {
       avatar,
     });
   }
-
 
   public async deleteEquipment(equipment: Equipment) {
     return this.repository.remove(equipment);

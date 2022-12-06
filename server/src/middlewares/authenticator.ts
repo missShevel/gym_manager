@@ -4,7 +4,7 @@ import ApiError from 'helpers/ApiError';
 import moment from 'moment';
 import SessionRepository from 'repositories/session.repository';
 
-export default async (req: Request, res: Response,  next: NextFunction) => {
+export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { sessionId }: { sessionId: string | undefined } = req.cookies;
 
