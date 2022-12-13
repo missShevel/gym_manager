@@ -29,9 +29,7 @@ export default class UserController extends BaseController {
         maxAge: environment.COOKIE_EXPIRE,
       });
 
-      res.json({
-        data: user,
-      });
+      res.json(user);
     } catch (error) {
       this.sendError(next, error);
     }
@@ -71,9 +69,7 @@ export default class UserController extends BaseController {
         role,
       });
 
-      res.json({
-        data: createdUser,
-      });
+      res.json(createdUser);
     } catch (error) {
       this.sendError(next, error);
     }

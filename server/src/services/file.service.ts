@@ -1,3 +1,4 @@
+import ApiError from 'helpers/ApiError';
 import FileRepository from '../repositories/file.repository';
 
 interface IUploadFile {
@@ -14,7 +15,7 @@ export default class FileService {
   }
 
   public findById(id: string | null) {
-    if (id === null) return null;
+    if (id === null) throw new ApiError('Not found', 400);
 
     return this.repository.findOneByOrFail({
       id,

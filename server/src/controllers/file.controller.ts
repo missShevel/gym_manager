@@ -23,9 +23,20 @@ export default class FileController extends BaseController {
         extention: ext,
       });
 
-      res.json({
-        data: file,
-      });
+      res.json(file);
+    } catch (error) {
+      this.sendError(next, error);
+    }
+  }
+
+  public async download(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { fileId } = req.params;
+      const file = await this.service.findById(fileId);
+      const filePath = `files/${file.id}${file.extention}`;
+
+      const fileStream = await fse.createReadStream(filePath);
+      fileStream.pipe(res);
     } catch (error) {
       this.sendError(next, error);
     }

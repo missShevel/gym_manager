@@ -16,7 +16,7 @@ import equipments from './seeds/equipments.json';
 import users from './seeds/users.json';
 import clients from './seeds/clients.json';
 
-const seedsFolder = path.join(__dirname, 'seeds', 'files');
+const seedsFolder = path.join(__dirname, 'files');
 const resultFolder = path.join(__dirname, '../', 'files');
 
 export class Seeds1668457378854 implements MigrationInterface {

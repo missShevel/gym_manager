@@ -13,11 +13,10 @@ const app = express();
 
 app.use(parser.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: '*',
-  }),
-);
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 app.use('/api', router);
 app.use(errorHandling);
 

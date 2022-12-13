@@ -35,9 +35,7 @@ export default class EquipmentController extends BaseController {
         avatar,
       });
 
-      res.json({
-        data: responce,
-      });
+      res.json(responce);
     } catch (error) {
       this.sendError(next, error);
     }
@@ -46,9 +44,7 @@ export default class EquipmentController extends BaseController {
   public async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const responce = await this.service.getAll();
-      res.json({
-        data: responce,
-      });
+      res.json(responce);
     } catch (error) {
       this.sendError(next, error);
     }
@@ -64,9 +60,7 @@ export default class EquipmentController extends BaseController {
       if (!equipment) {
         throw new ApiError(`Equipment with id ${req.params.id} was not found`, 400);
       }
-      res.json({
-        data: equipment,
-      });
+      res.json(equipment);
     } catch (error) {
       this.sendError(next, error);
     }
@@ -106,9 +100,7 @@ export default class EquipmentController extends BaseController {
         updatedEquipment = await this.service.updateEquipmentAvatar(updatedEquipment, file);
       }
 
-      res.json({
-        data: updatedEquipment,
-      });
+      res.json(updatedEquipment);
     } catch (error) {
       this.sendError(next, error);
     }
