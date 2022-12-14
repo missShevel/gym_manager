@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import initialState from './state';
-import { createEquipment, getEquipments } from './thunks';
+import { createEquipment, deleteEquipment, getEquipments } from './thunks';
 
 const reducer = createReducer(initialState, (builder) => {
     builder
@@ -15,6 +15,15 @@ const reducer = createReducer(initialState, (builder) => {
             state.isLoading = true;
         })
         .addCase(createEquipment.fulfilled, (state) => {
+            state.isLoading = false;
+        })
+        .addCase(deleteEquipment.pending, (state) => {
+            state.isLoading = true;
+        })
+        .addCase(deleteEquipment.rejected, (state) => {
+            state.isLoading = true;
+        })
+        .addCase(deleteEquipment.fulfilled, (state) => {
             state.isLoading = false;
         });
 });

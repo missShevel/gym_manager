@@ -6,6 +6,7 @@ const getType = getActionType(name);
 const Types = {
     getAll: getType('getAll'),
     create: getType('create'),
+    delete: getType('delete'),
 };
 
 export default Types;

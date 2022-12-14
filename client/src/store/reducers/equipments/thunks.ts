@@ -27,4 +27,13 @@ export const createEquipment =
     }
 });
 
+export const deleteEquipment =
+    createAsyncThunk(Types.delete, async (data: string) => {
+    try {
+        await service.deleteById(data);
+    } catch (e) {
+        console.log(e);
+    }
+});
+
 export default {};

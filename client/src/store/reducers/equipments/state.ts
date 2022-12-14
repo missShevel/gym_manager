@@ -1,4 +1,4 @@
-import { type Equipment } from 'domains';
+import { Equipment } from 'domains';
 
 export interface EquipmentState {
   data: Equipment[];

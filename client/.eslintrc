@@ -12,7 +12,10 @@
     "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }],
     "no-console": "off",
     "newline-per-chained-call": "off",
-    "consistent-return": "off"
+    "consistent-return": "off",
+    "no-nested-ternary": "off",
+    "react/jsx-boolean-value": "off",
+    "no-confusing-arrow": "off"
   },
   "parserOptions": {
     "project": "./tsconfig.json"

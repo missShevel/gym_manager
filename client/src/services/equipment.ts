@@ -23,4 +23,14 @@ export default class EquipmentService extends Service {
             throw new Error();
         }
     }
+
+    public async deleteById(id: string) {
+        try {
+            const res = await this.connector.delete<Equipment>(`${this.endpoint}/${id}`);
+
+            return res.data;
+        } catch (e) {
+            throw new Error();
+        }
+    }
 }
