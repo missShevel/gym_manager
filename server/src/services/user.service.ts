@@ -1,9 +1,12 @@
 import { UserSex } from 'absctracts';
+import database from 'database';
 import { areEqual } from 'helpers';
 import ApiError from 'helpers/ApiError';
 import File from 'models/file';
 import Role from 'models/role';
+import User from 'models/user';
 import SessionRepository from 'repositories/session.repository';
+import { Brackets } from 'typeorm';
 import UserRepository from '../repositories/user.repository';
 
 interface ISignInData {
@@ -19,6 +22,11 @@ interface ICreateData {
   passwordHash: string;
   avatar?: File;
   role: Role;
+}
+
+interface ISearchData {
+  search?: string;
+  role?: Role
 }
 
 export default class UserService {
@@ -69,5 +77,30 @@ export default class UserService {
     }
 
     return this.repository.save(data);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  public async getAll(data?: ISearchData) {
+    const qb = database
+      .getRepository(User)
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role');
+
+    if (data?.role) {
+      qb.where('user.roleId = :roleId', { roleId: data.role.id });
+    }
+
+    if (data?.search) {
+      qb.andWhere(
+        new Brackets((qb1) => {
+          qb1
+            .where('user.firstName = :search', { search: data.search })
+            .orWhere('user.lastName = :search', { search: data.search })
+            .orWhere('user.email = :search', { search: data.search });
+        }),
+      );
+    }
+
+    return qb.getMany();
   }
 }

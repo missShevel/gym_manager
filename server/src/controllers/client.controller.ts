@@ -5,6 +5,7 @@ import { USER_STATUSES } from 'absctracts/user';
 import FileService from 'services/file.service';
 import BaseController from './Base';
 import ApiError from 'helpers/ApiError';
+import { isAllowed } from 'helpers';
 
 export default class ClientController extends BaseController {
   private service = new ClientService();
@@ -14,6 +15,9 @@ export default class ClientController extends BaseController {
   public async create(req: Request, res: Response, next: NextFunction) {
     try {
       // 2. validation (req.body)
+      const { user } = res.locals;
+      if (!isAllowed(user, 'add_clients')) throw new ApiError('Forbidden', 400);
+
       const schema = yup.object().shape({
         firstName: yup.string().required(),
         lastName: yup.string().required(),
@@ -49,6 +53,9 @@ export default class ClientController extends BaseController {
 
   public async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'view_clients')) throw new ApiError('Forbidden', 400);
+
       const responce = await this.service.getAll();
 
       res.json({
@@ -61,6 +68,9 @@ export default class ClientController extends BaseController {
 
   public async getById(req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'view_clients')) throw new ApiError('Forbidden', 400);
+
       const schema = yup.object().shape({
         id: yup.string().uuid().required(),
       });
@@ -79,6 +89,9 @@ export default class ClientController extends BaseController {
 
   public async updateById(req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'edit_clients')) throw new ApiError('Forbidden', 400);
+
       const clientId = req.params.id;
       const client = await this.service.findById(clientId);
       if (!client) {
@@ -121,6 +134,9 @@ export default class ClientController extends BaseController {
 
   public async deleteById(req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'remove_clients')) throw new ApiError('Forbidden', 400);
+
       const clientId = req.params.id;
       const client = await this.service.findById(clientId);
       if (!client) {

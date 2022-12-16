@@ -5,6 +5,7 @@ import EquipmentService from 'services/equipment.service';
 import FileService from 'services/file.service';
 import BaseController from './Base';
 import ApiError from 'helpers/ApiError';
+import { isAllowed } from 'helpers';
 
 export default class EquipmentController extends BaseController {
   private service = new EquipmentService();
@@ -13,6 +14,9 @@ export default class EquipmentController extends BaseController {
 
   public async create(req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'add_equipments')) throw new ApiError('Forbidden', 400);
+
       // 2. validation (req.body)
       const schema = yup.object().shape({
         name: yup.string().min(2).max(200).required(),
@@ -43,6 +47,9 @@ export default class EquipmentController extends BaseController {
 
   public async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'view_equipments')) throw new ApiError('Forbidden', 400);
+
       const responce = await this.service.getAll();
       res.json(responce);
     } catch (error) {
@@ -52,6 +59,9 @@ export default class EquipmentController extends BaseController {
 
   public async getById(req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'view_equipments')) throw new ApiError('Forbidden', 400);
+
       const schema = yup.object().shape({
         id: yup.string().uuid().required(),
       });
@@ -68,6 +78,9 @@ export default class EquipmentController extends BaseController {
 
   public async updateById(req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'edit_equipments')) throw new ApiError('Forbidden', 400);
+
       const equipmentId = req.params.id;
       const equipment = await this.service.findById(equipmentId);
 
@@ -108,6 +121,9 @@ export default class EquipmentController extends BaseController {
 
   public async deleteById(req: Request, res: Response, next: NextFunction) {
     try {
+      const { user } = res.locals;
+      if (!isAllowed(user, 'remove_equipments')) throw new ApiError('Forbidden', 400);
+
       const equipmentId = req.params.id;
       const equipment = await this.service.findById(equipmentId);
       if (!equipment) {
