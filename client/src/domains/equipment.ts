@@ -11,5 +11,5 @@ export interface Equipment {
 export interface ICreateEquipmentData {
     name: string;
     count: number;
-    details: string;
+    link: string;
 }

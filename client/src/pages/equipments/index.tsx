@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getStore } from 'store';
 import { useSelector } from 'store/hooks';
 import { getEquipments } from 'store/reducers/equipments/thunks';
@@ -18,12 +18,26 @@ function EquipmentsPage() {
     }
   }, [user]);
 
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
   if (isLoading) return <Typography>Loading...</Typography>;
 
   return (
     <Box>
       <EquipmentsTable equipments={data} />
-      <EquipmentsCreateForm />
+      <EquipmentsCreateForm
+        modalOpen={handleClickOpen}
+        isModalOpen={open}
+        modalClose={handleCancel}
+      />
     </Box>
   );
 }

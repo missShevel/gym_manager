@@ -18,7 +18,7 @@ export default function EquipmentsTable({ equipments }: IEquipmentsTableProps) {
   type Order = 'asc' | 'desc';
   const [rowData, setRowData] = useState(equipments);
   const [orderDirection, setOrderDirection] = useState<Order>('asc');
-  const getMultiplier = (orderBy: Order) => orderBy === 'asc' ? 1 : -1;
+  const getMultiplier = (orderBy: Order) => (orderBy === 'asc' ? 1 : -1);
 
   const sortByCount = (arr, orderBy: Order) => {
     const multiplier = getMultiplier(orderBy);
@@ -27,7 +27,7 @@ export default function EquipmentsTable({ equipments }: IEquipmentsTableProps) {
 
   const sortByName = (arr, orderBy: Order) => {
     const multiplier = getMultiplier(orderBy);
-    return [...arr].sort((a, b) => multiplier * (a.name.localeCompare(b.name)));
+    return [...arr].sort((a, b) => multiplier * a.name.localeCompare(b.name));
   };
 
   const handleCountsSortRequest = () => {
@@ -55,6 +55,7 @@ export default function EquipmentsTable({ equipments }: IEquipmentsTableProps) {
                 Count
               </TableSortLabel>
             </TableCell>
+            <TableCell>Details</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -80,6 +81,9 @@ export default function EquipmentsTable({ equipments }: IEquipmentsTableProps) {
               </TableCell>
               <TableCell component="th" scope="row">
                 {equipment.count}
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {equipment.link}
               </TableCell>
             </TableRow>
           ))}
