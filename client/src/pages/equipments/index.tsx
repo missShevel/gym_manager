@@ -1,8 +1,9 @@
+import { forms } from 'localizations';
 import { useEffect, useState } from 'react';
 import { getStore } from 'store';
 import { useSelector } from 'store/hooks';
-import { getEquipments } from 'store/reducers/equipments/thunks';
-import { Box, Typography } from 'ui/components';
+import { createEquipment, getEquipments, updateEquipment } from 'store/reducers/equipments/thunks';
+import { Box, Typography, Button } from 'ui/components';
 import EquipmentsCreateForm from './components/form';
 import EquipmentsTable from './components/table';
 
@@ -32,12 +33,30 @@ function EquipmentsPage() {
 
   return (
     <Box>
-      <EquipmentsTable equipments={data} />
+      <EquipmentsTable
+        equipments={data}
+        modalOptions={{
+          modalOpen: handleClickOpen,
+          isModalOpen: open,
+          modalClose: handleCancel,
+          onSubmitAction: updateEquipment,
+          modalTitle: 'Update Equipment',
+        }}
+      />
       <EquipmentsCreateForm
-        modalOpen={handleClickOpen}
         isModalOpen={open}
         modalClose={handleCancel}
+        onSubmitAction={createEquipment}
+        modalTitle="Create New Equipment"
+        initialValues={{
+          name: '',
+          count: 1,
+          link: '',
+        }}
       />
+      <Button variant="outlined" onClick={handleClickOpen}>
+        {forms.buttons.create.label}
+      </Button>
     </Box>
   );
 }

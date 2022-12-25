@@ -13,3 +13,10 @@ export interface ICreateEquipmentData {
     count: number;
     link: string;
 }
+
+export interface IUpdateEquipmentData {
+    id: string;
+    name?: string;
+    count?: string;
+    link?: string;
+}

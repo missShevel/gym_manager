@@ -1,30 +1,35 @@
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { getStore } from 'store';
-import { createEquipment, getEquipments } from 'store/reducers/equipments/thunks';
+import { getEquipments } from 'store/reducers/equipments/thunks';
 import { Box, Button, Form, Stack, TextField } from 'ui/components';
 import { forms } from 'localizations';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
-interface IEquipmentsCreateForm {
-  modalOpen: () => void;
+interface IEquipmentsCreateUpdateForm {
   isModalOpen: boolean;
   modalClose: () => void;
+  initialValues: {
+    name: string,
+    count: number,
+    link?: string
+  };
+  onSubmitAction: (data: any) => any;
+  modalTitle: string;
 }
 
 export default function EquipmentsCreateForm({
-  modalOpen,
   isModalOpen,
   modalClose,
-}: IEquipmentsCreateForm) {
+  onSubmitAction,
+  modalTitle,
+  initialValues
+}: IEquipmentsCreateUpdateForm) {
   const { dispatch } = getStore();
+console.log(initialValues);
 
   const form = useFormik({
-    initialValues: {
-      name: '',
-      count: 1,
-      link: '',
-    },
+    initialValues,
     validationSchema: yup
       .object()
       .strict()
@@ -34,7 +39,7 @@ export default function EquipmentsCreateForm({
         link: yup.string().strict().trim().url(),
       }),
     onSubmit(data) {
-      dispatch(createEquipment(data))
+      dispatch(onSubmitAction(data))
         .unwrap()
         .then(() => {
           dispatch(getEquipments());
@@ -45,11 +50,8 @@ export default function EquipmentsCreateForm({
 
   return (
     <Box>
-      <Button variant="outlined" onClick={modalOpen}>
-        {forms.buttons.create.label}
-      </Button>
       <Dialog open={isModalOpen}>
-        <DialogTitle>Create New Equipment</DialogTitle>
+        <DialogTitle>{modalTitle}</DialogTitle>
         <DialogContent>
           <Form onSubmit={form.handleSubmit}>
             <Stack gap={2}>
