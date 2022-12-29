@@ -1,11 +1,15 @@
-import { IUpdateEquipment } from './../services/equipment.service';
 import * as yup from 'yup';
 import { Request, Response, NextFunction } from 'express';
 import EquipmentService from 'services/equipment.service';
 import FileService from 'services/file.service';
-import BaseController from './Base';
 import ApiError from 'helpers/ApiError';
 import { isAllowed } from 'helpers';
+import BaseController from './Base';
+import { IUpdateEquipment } from '../services/equipment.service';
+
+// yup.addMethod(yup.mixed, 'defined', function () {
+//   return this.test('defined', '{path} must be defined', (value) => value !== undefined);
+// });
 
 export default class EquipmentController extends BaseController {
   private service = new EquipmentService();
@@ -22,7 +26,7 @@ export default class EquipmentController extends BaseController {
         name: yup.string().min(2).max(200).required(),
         count: yup.number().required().positive().integer(),
         link: yup.string().url(),
-        fileId: yup.string().uuid(),
+        fileId: yup.string().uuid().nullable().defined(),
       });
       await schema.validate(req.body);
       let avatar;
@@ -91,15 +95,15 @@ export default class EquipmentController extends BaseController {
         name: yup.string().min(2).max(200),
         count: yup.number().positive().integer(),
         link: yup.string().url(),
-        fileId: yup.string().uuid(),
+        fileId: yup.string().uuid().nullable().defined(),
       });
       await schema.validate(req.body);
       const { fileId } = req.body;
-      let file;
+      let file = null;
       if (fileId) file = await this.fileService.findById(fileId);
-      console.log(file);
+      console.log(fileId);
 
-      if (!file) {
+      if (fileId && !file) {
         throw new ApiError(`File with id ${fileId} was not found`, 400);
       }
       const updateData: IUpdateEquipment = {
@@ -109,9 +113,7 @@ export default class EquipmentController extends BaseController {
       };
 
       let updatedEquipment = await this.service.updateEquipment(equipment, updateData);
-      if (fileId) {
-        updatedEquipment = await this.service.updateEquipmentAvatar(updatedEquipment, file);
-      }
+      updatedEquipment = await this.service.updateEquipmentAvatar(updatedEquipment, file);
 
       res.json(updatedEquipment);
     } catch (error) {

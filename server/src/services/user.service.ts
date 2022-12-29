@@ -42,6 +42,7 @@ export default class UserService {
       },
       relations: {
         role: true,
+        avatar: true,
       },
     });
 

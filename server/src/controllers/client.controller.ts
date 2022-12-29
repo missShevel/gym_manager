@@ -17,6 +17,8 @@ export default class ClientController extends BaseController {
       // 2. validation (req.body)
       const { user } = res.locals;
       if (!isAllowed(user, 'add_clients')) throw new ApiError('Forbidden', 400);
+      console.log(req.body);
+
 
       const schema = yup.object().shape({
         firstName: yup.string().required(),

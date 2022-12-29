@@ -5,6 +5,8 @@ import { ValidationError } from 'yup';
 
 export default class BaseController {
   protected sendError(next: NextFunction, error: unknown) {
+    console.error(error);
+
     if (error instanceof ApiError) {
       next(error);
       return;
@@ -20,7 +22,6 @@ export default class BaseController {
       return;
     }
 
-    console.error(error);
     next(new ApiError());
   }
 }

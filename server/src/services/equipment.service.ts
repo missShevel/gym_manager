@@ -22,7 +22,11 @@ export default class EquipmentService {
   }
 
   public async getAll() {
-    return this.repository.find();
+    return this.repository.find({
+      relations: {
+        avatar: true,
+      },
+    });
   }
 
   public async findById(id: string) {
@@ -42,7 +46,7 @@ export default class EquipmentService {
     return this.repository.save(newEquipment);
   }
 
-  public async updateEquipmentAvatar(equipment: Equipment, avatar: File) {
+  public async updateEquipmentAvatar(equipment: Equipment, avatar: File | null) {
     return this.repository.save({
       ...equipment,
       avatar,
