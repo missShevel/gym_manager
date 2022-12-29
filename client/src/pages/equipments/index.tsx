@@ -1,11 +1,13 @@
-import { forms } from 'localizations';
+import { File as FileDomain } from 'domains';
 import { useEffect, useState } from 'react';
 import { getStore } from 'store';
 import { useSelector } from 'store/hooks';
+import { pages } from 'localizations';
 import { createEquipment, getEquipments, updateEquipment } from 'store/reducers/equipments/thunks';
-import { Box, Typography, Button } from 'ui/components';
-import EquipmentsCreateForm from './components/form';
+import { Box, Typography } from 'ui/components';
+import EquipmentsForm, { EquipmentsFormInitial } from './components/form';
 import EquipmentsTable from './components/table';
+import EquipmentToolbar from './components/toolbar';
 
 function EquipmentsPage() {
   const { dispatch } = getStore();
@@ -19,44 +21,83 @@ function EquipmentsPage() {
     }
   }, [user]);
 
-  const [open, setOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File>(undefined);
+  const [oldFile, setOldFile] = useState<FileDomain>(undefined);
+  const [initialValues, setInitialValues] = useState<EquipmentsFormInitial>({
+    id: '',
+    name: '',
+    count: 1,
+    link: '',
+  });
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleCreateModalOpen = () => {
+    setCreateModalOpen(true);
+  };
+  const handleUpdateModalOpen = () => {
+    setUpdateModalOpen(true);
   };
 
-  const handleCancel = () => {
-    setOpen(false);
+  const handleClose = () => {
+    setSelectedFile(undefined);
+    setCreateModalOpen(false);
+    setUpdateModalOpen(false);
   };
+  const handleCreateEquipment = (formData) =>
+    createEquipment({
+      ...formData,
+      file: selectedFile,
+    });
 
+  const handleUpdateEquipment = (formData) =>
+    updateEquipment({
+      ...formData,
+      id: initialValues.id,
+      file: selectedFile,
+      fileId: oldFile?.id,
+    });
   if (isLoading) return <Typography>Loading...</Typography>;
 
   return (
-    <Box>
+    <Box
+      sx={{
+        width: 'calc(100% - 200px)',
+      }}
+    >
+      <Typography variant="h3">{pages.equipments.header}</Typography>
       <EquipmentsTable
         equipments={data}
-        modalOptions={{
-          modalOpen: handleClickOpen,
-          isModalOpen: open,
-          modalClose: handleCancel,
-          onSubmitAction: updateEquipment,
-          modalTitle: 'Update Equipment',
-        }}
+        handleUpdateModalOpen={handleUpdateModalOpen}
+        setInitialValues={setInitialValues}
+        setSelectedFile={setSelectedFile}
+        setOldFile={setOldFile}
       />
-      <EquipmentsCreateForm
-        isModalOpen={open}
-        modalClose={handleCancel}
-        onSubmitAction={createEquipment}
+      <EquipmentToolbar handleCreateModalOpen={handleCreateModalOpen} />
+      <EquipmentsForm
+        isModalOpen={createModalOpen}
+        modalClose={handleClose}
+        onSubmitAction={handleCreateEquipment}
         modalTitle="Create New Equipment"
         initialValues={{
           name: '',
           count: 1,
           link: '',
         }}
+        selectedFile={selectedFile}
+        setSelectedFile={setSelectedFile}
+        setOldFile={setOldFile}
       />
-      <Button variant="outlined" onClick={handleClickOpen}>
-        {forms.buttons.create.label}
-      </Button>
+      <EquipmentsForm
+        isModalOpen={updateModalOpen}
+        modalClose={handleClose}
+        onSubmitAction={handleUpdateEquipment}
+        modalTitle="Update Equipment"
+        initialValues={initialValues}
+        selectedFile={selectedFile}
+        setSelectedFile={setSelectedFile}
+        setOldFile={setOldFile}
+      />
     </Box>
   );
 }

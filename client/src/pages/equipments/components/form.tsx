@@ -1,33 +1,42 @@
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { getStore } from 'store';
+import { File as FileDomain } from 'domains';
 import { getEquipments } from 'store/reducers/equipments/thunks';
 import { Box, Button, Form, Stack, TextField } from 'ui/components';
 import { forms } from 'localizations';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import UploadImage from 'ui/common/UploadImage';
 
-interface IEquipmentsCreateUpdateForm {
-  isModalOpen: boolean;
-  modalClose: () => void;
-  initialValues: {
-    name: string,
-    count: number,
-    link?: string
-  };
-  onSubmitAction: (data: any) => any;
-  modalTitle: string;
+export interface EquipmentsFormInitial {
+  id?: string;
+  name: string;
+  count: number;
+  link: string;
 }
 
-export default function EquipmentsCreateForm({
+interface IEquipmentsForm {
+  isModalOpen: boolean;
+  modalClose: () => void;
+  initialValues: EquipmentsFormInitial;
+  onSubmitAction: (data: any) => any;
+  modalTitle: string;
+  setSelectedFile: (file: File) => any;
+  selectedFile?: File;
+  setOldFile: (file: FileDomain) => any;
+}
+
+export default function EquipmentsForm({
   isModalOpen,
   modalClose,
   onSubmitAction,
   modalTitle,
-  initialValues
-}: IEquipmentsCreateUpdateForm) {
+  initialValues,
+  setSelectedFile,
+  selectedFile,
+  setOldFile,
+}: IEquipmentsForm) {
   const { dispatch } = getStore();
-console.log(initialValues);
-
   const form = useFormik({
     initialValues,
     validationSchema: yup
@@ -46,57 +55,68 @@ console.log(initialValues);
           modalClose();
         });
     },
+    enableReinitialize: true,
   });
 
   return (
     <Box>
-      <Dialog open={isModalOpen}>
+      <Dialog open={isModalOpen} maxWidth="md" fullWidth={true}>
         <DialogTitle>{modalTitle}</DialogTitle>
-        <DialogContent>
+        <DialogContent
+          sx={{
+            pt: '10px !important',
+          }}
+        >
           <Form onSubmit={form.handleSubmit}>
-            <Stack gap={2}>
-              <TextField
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
-                value={form.values.name}
-                name="name"
-                type="text"
-                label={forms.fields.name.label}
-                error={Boolean(form.errors.name)}
-                helperText={form.errors.name}
-                fullWidth
-              />
-              <TextField
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
-                value={form.values.count}
-                name="count"
-                type="number"
-                label={forms.fields.count.label}
-                error={Boolean(form.errors.count)}
-                helperText={form.errors.count}
-                fullWidth
-              />
-              <TextField
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
-                value={form.values.link}
-                name="link"
-                type="text"
-                label={forms.fields.link.label}
-                error={Boolean(form.errors.link)}
-                helperText={form.errors.link}
-                fullWidth
-              />
-            </Stack>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Stack
+                sx={{
+                  justifySelf: 'center',
+                }}
+              >
+                <UploadImage
+                  title="Upload image"
+                  setSelectedFile={setSelectedFile}
+                  selectedFile={selectedFile}
+                  onCancelSelection={() => setOldFile(undefined)}
+                />
+              </Stack>
+              <Stack gap={2} sx={{ justifySelf: 'right', width: '50%' }}>
+                <TextField
+                  onChange={form.handleChange}
+                  onBlur={form.handleBlur}
+                  value={form.values.name}
+                  name="name"
+                  type="text"
+                  label={forms.fields.name.label}
+                  error={Boolean(form.errors.name)}
+                  helperText={form.errors.name}
+                />
+                <TextField
+                  onChange={form.handleChange}
+                  onBlur={form.handleBlur}
+                  value={form.values.count}
+                  name="count"
+                  type="number"
+                  label={forms.fields.count.label}
+                  error={Boolean(form.errors.count)}
+                  helperText={form.errors.count}
+                />
+                <TextField
+                  onChange={form.handleChange}
+                  onBlur={form.handleBlur}
+                  value={form.values.link}
+                  name="link"
+                  type="text"
+                  label={forms.fields.link.label}
+                  error={Boolean(form.errors.link)}
+                  helperText={form.errors.link}
+                />
+              </Stack>
+            </div>
             <DialogActions>
               <Button onClick={modalClose}>Cancel</Button>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={Object.values(form.touched).length === 0 || !form.isValid}
-                disableElevation
-              >
+              <Button type="submit" variant="contained" disabled={!form.isValid} disableElevation>
                 {forms.buttons.submit.label}
               </Button>
             </DialogActions>

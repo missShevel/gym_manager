@@ -1,19 +1,34 @@
 import { header, forms } from 'localizations';
-import { AppBar, Box, Button, Typography } from 'ui/components';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useDispatch, useSelector } from 'store/hooks';
+import { AppBar, Avatar, Box, Button, Typography } from 'ui/components';
+import { useDispatch } from 'store/hooks';
 import { logout } from 'store/reducers/user/thunks';
 import { useNavigate } from 'react-router-dom';
+import { User } from 'domains';
+import { useEffect, useState } from 'react';
+import FileService from 'services/file';
 
-export default function Header() {
+const fileService = new FileService();
+
+export default function Header({ user }: { user: User }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data: user } = useSelector((store) => store.user);
+
+  const [avatar, setAvatar] = useState(null);
+
   const logOut = () => {
     dispatch(logout())
       .unwrap()
       .then(() => navigate('/sign-in'));
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      const { url } = await fileService.getById(user.avatar.id);
+      setAvatar(url);
+    }
+
+    if (user?.avatar?.id) fetchData();
+  }, [user?.avatar]);
 
   return (
     <AppBar
@@ -37,11 +52,12 @@ export default function Header() {
             gap: '10px',
           }}
         >
-          <AccountCircleIcon
+          <Avatar
             sx={{
-              width: 40,
-              height: 40,
+              height: '60px',
+              width: '60px',
             }}
+            src={avatar}
           />
           <Typography fontSize={24} textTransform="capitalize">
             {user.firstName}
@@ -49,7 +65,7 @@ export default function Header() {
             {user.lastName}
           </Typography>
 
-          <Button variant="contained" color="primary" onClick={logOut}>
+          <Button variant="contained" color="info" onClick={logOut}>
             {forms.buttons.logout.label}
           </Button>
         </Box>

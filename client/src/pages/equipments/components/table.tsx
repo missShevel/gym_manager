@@ -6,29 +6,37 @@ import {
   TableRow,
   TableSortLabel,
 } from '@mui/material';
-import { Equipment } from 'domains';
-import { useEffect, useState } from 'react';
-import { updateEquipment } from 'store/reducers/equipments/thunks';
-import { Paper, Table } from 'ui/components';
-import EquipmentsCreateForm from './form';
+import { Equipment, File as FileDomain } from 'domains';
+import { formatFileName } from 'helpers';
+import { useState } from 'react';
+import FileService from 'services/file';
+import { getStore } from 'store';
+import { deleteEquipment, getEquipments } from 'store/reducers/equipments/thunks';
+import { Button, Paper, Table } from 'ui/components';
+import { EquipmentsFormInitial } from './form';
 
 interface IEquipmentsTableProps {
   equipments: Equipment[];
-  modalOptions: {
-    modalOpen: () => void;
-    isModalOpen: boolean;
-    modalClose: () => void;
-    onSubmitAction: (data: any) => any;
-    modalTitle: string;
-  };
+  handleUpdateModalOpen: () => void;
+  setSelectedFile: (file: File) => any;
+  setOldFile: (file: FileDomain) => any;
+  setInitialValues: (data: EquipmentsFormInitial) => void;
 }
+const { dispatch } = getStore();
 
-export default function EquipmentsTable({ equipments, modalOptions }: IEquipmentsTableProps) {
+const fileService = new FileService();
+
+export default function EquipmentsTable({
+  equipments,
+  handleUpdateModalOpen,
+  setInitialValues,
+  setSelectedFile,
+  setOldFile,
+}: IEquipmentsTableProps) {
   type Order = 'asc' | 'desc';
   const [rowData, setRowData] = useState(equipments);
   const [orderDirection, setOrderDirection] = useState<Order>('asc');
   const getMultiplier = (orderBy: Order) => (orderBy === 'asc' ? 1 : -1);
-  const [selectedRow, setSelectedRow] = useState<Equipment | null>(null);
 
   const sortByCount = (arr, orderBy: Order) => {
     const multiplier = getMultiplier(orderBy);
@@ -50,85 +58,90 @@ export default function EquipmentsTable({ equipments, modalOptions }: IEquipment
     setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc');
   };
 
-  const [open, setOpen] = useState(false);
-  const [initialValues, setInitialValues] = useState({ name: '', count: 1, link: '' });
-  useEffect(() => {
-    if (!selectedRow) setInitialValues({ name: '', count: 1, link: '' });
-    else
-      setInitialValues({
-        name: selectedRow.name,
-        count: selectedRow.count,
-        link: selectedRow.link,
-      });
-  }, [selectedRow]);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleCancel = () => {
-    setOpen(false);
+  const handleDelete = (id: string) => {
+    dispatch(deleteEquipment(id))
+      .unwrap()
+      .then(() => dispatch(getEquipments()));
   };
 
   return (
-    <>
-      <EquipmentsCreateForm
-        isModalOpen={open}
-        modalClose={handleCancel}
-        onSubmitAction={updateEquipment}
-        modalTitle="Update Equipment"
-        initialValues={initialValues}
-      />
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell onClick={handleNamesSortRequest}>
-                <TableSortLabel active={true} direction={orderDirection}>
-                  Name
-                </TableSortLabel>
+    <TableContainer component={Paper} sx={{ height: 550 }}>
+      <Table stickyHeader sx={{ minWidth: 650, height: 'max-content' }}>
+        <TableHead>
+          <TableRow>
+            <TableCell onClick={handleNamesSortRequest}>
+              <TableSortLabel active={true} direction={orderDirection}>
+                Name
+              </TableSortLabel>
+            </TableCell>
+            <TableCell onClick={handleCountsSortRequest}>
+              <TableSortLabel active={true} direction={orderDirection}>
+                Count
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>Details</TableCell>
+            <TableCell />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rowData.map((equipment) => (
+            <TableRow
+              key={equipment.id}
+              sx={{
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'grey.200',
+                },
+                '&:active': {
+                  backgroundColor: 'grey.300',
+                },
+              }}
+              onClick={async () => {
+                setInitialValues({ ...equipment });
+                if (equipment.avatar) {
+                  setOldFile(equipment.avatar);
+                  const { blob } = await fileService.getById(equipment.avatar.id);
+                  const file = new File([blob], formatFileName(equipment.avatar));
+                  setSelectedFile(file);
+                }
+                handleUpdateModalOpen();
+              }}
+            >
+              <TableCell component="th" scope="row">
+                {equipment.name}
               </TableCell>
-              <TableCell onClick={handleCountsSortRequest}>
-                <TableSortLabel active={true} direction={orderDirection}>
-                  Count
-                </TableSortLabel>
+              <TableCell component="th" scope="row">
+                {equipment.count}
               </TableCell>
-              <TableCell>Details</TableCell>
+              <TableCell component="th" scope="row">
+                {equipment.link}
+              </TableCell>
+              <TableCell>
+                <Button
+                  variant="outlined"
+                  component="th"
+                  scope="row"
+                  sx={{
+                    color: 'error.main',
+                    borderColor: 'error.main',
+                    '&:hover': {
+                      backgroundColor: 'error.main',
+                      color: 'error.contrastText',
+                      borderColor: 'error.main',
+                    },
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleDelete(equipment.id);
+                  }}
+                >
+                  Delete
+                </Button>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {rowData.map((equipment) => (
-              <TableRow
-                key={equipment.id}
-                sx={{
-                  '&:last-child td, &:last-child th': { border: 0 },
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: 'grey.200',
-                  },
-                  '&:active': {
-                    backgroundColor: 'grey.300',
-                  },
-                }}
-                onClick={() => {
-                  setSelectedRow(equipment);
-                  handleClickOpen();
-                }}
-              >
-                <TableCell component="th" scope="row">
-                  {equipment.name}
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  {equipment.count}
-                </TableCell>
-                <TableCell component="th" scope="row">
-                  {equipment.link}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }

@@ -1,26 +1,41 @@
 import { EquipmentsPage, NotFoundPage, RootRedirector, SignInPage } from 'pages';
 import { Routes, Route } from 'react-router-dom';
+import { useSelector } from 'store/hooks';
 import Header from 'ui/common/Header';
 import PrivateRoute from 'ui/common/PrivateRoute';
+import Sidebar from 'ui/common/Sidebar';
 import { Box } from 'ui/components';
 
 function Router() {
+  const { data: user } = useSelector((store) => store.user);
+
   return (
     <Box>
-      <Header />
-      <Routes>
-        <Route path="/" element={<RootRedirector />} />
-        <Route
-          path="/equipments"
-          element={(
-            <PrivateRoute>
-              <EquipmentsPage />
-            </PrivateRoute>
-          )}
-        />
-        <Route path="/sign-in" element={<SignInPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      <Header user={user} />
+      <Box
+        sx={[
+          user && {
+            display: 'flex',
+            margin: 0,
+            gap: 1,
+          },
+        ]}
+      >
+        {user && <Sidebar user={user} />}
+        <Routes>
+          <Route path="/" element={<RootRedirector user={user} />} />
+          <Route
+            path="/equipments"
+            element={
+              <PrivateRoute>
+                <EquipmentsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/sign-in" element={<SignInPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Box>
     </Box>
   );
 }

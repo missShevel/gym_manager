@@ -15,7 +15,10 @@
     "consistent-return": "off",
     "no-nested-ternary": "off",
     "react/jsx-boolean-value": "off",
-    "no-confusing-arrow": "off"
+    "no-confusing-arrow": "off",
+    "react/jsx-wrap-multilines": "off",
+    "import/prefer-default-export": "off",
+    "react/no-array-index-key": "off"
   },
   "parserOptions": {
     "project": "./tsconfig.json"

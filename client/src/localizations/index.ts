@@ -38,4 +38,7 @@ export const pages = {
   signIn: {
     header: 'Вхід',
   },
+  equipments: {
+    header: 'Обладнання',
+  },
 };
