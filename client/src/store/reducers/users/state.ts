@@ -1,12 +1,12 @@
 import { User } from 'domains';
 
-export interface UserState {
-  data: User | null;
+export interface UsersState {
+  data: User[];
   isLoading: boolean;
 }
 
-const initialState: UserState = {
-  data: null,
+const initialState: UsersState = {
+  data: [],
   isLoading: false,
 };
 

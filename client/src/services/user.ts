@@ -1,36 +1,101 @@
-import { ISignInData, User } from 'domains';
+import { ISignInData, User, ICreateUserData, IUpdateUserData, ROLES } from 'domains';
 import Service from './BaseService';
+import FileService from './file';
+
+const fileService = new FileService();
 
 export default class UserService extends Service {
-    private endpoint = '/users';
+  private endpoint = '/users';
 
-    async signIn(data: ISignInData) {
-        try {
-            const user = await this.connector.post<User>(`${this.endpoint}/sign-in`, data);
+  public async getAll(role: ROLES) {
+    try {
+      const res = await this.connector.get<User[]>(`${this.endpoint}/?role=${role}`);
 
-            return user.data;
-        } catch (e) {
-            throw new Error();
-        }
+      return res.data;
+    } catch (e) {
+      throw new Error();
     }
+  }
 
-    async me() {
-        try {
-            const user = await this.connector.get<User>(`${this.endpoint}/me`);
+  public async create(data: ICreateUserData) {
+    try {
+      let fileId = null;
+      if (data.file) {
+        const { id } = await fileService.upload(data.file);
 
-            return user.data;
-        } catch (e) {
-            throw new Error();
-        }
+        fileId = id;
+      }
+      const res = await this.connector.post<User>(this.endpoint, {
+        ...data,
+        fileId,
+      });
+
+      return res.data;
+    } catch (e) {
+      console.log(e);
+      throw e;
     }
+  }
 
-    async logout() {
-        try {
-            const user = await this.connector.get<User>(`${this.endpoint}/logout`);
+  public async updateById(data: IUpdateUserData) {
+    try {
+      let fileId;
+      if (data.file) {
+        // new file
+        const { id } = await fileService.upload(data.file);
 
-            return user.data;
-        } catch (e) {
-            throw new Error();
-        }
+        fileId = id;
+      } else {
+        // old file or it is deleted
+        fileId = data.fileId || null;
+      }
+      const res = await this.connector.put<User>(`${this.endpoint}/${data.id}`, {
+        ...data,
+        fileId,
+      });
+      return res.data;
+    } catch (e) {
+      throw new Error();
     }
+  }
+
+  public async deleteById(id: string) {
+    try {
+      const res = await this.connector.delete<User>(`${this.endpoint}/${id}`);
+
+      return res.data;
+    } catch (e) {
+      throw new Error();
+    }
+  }
+
+  async signIn(data: ISignInData) {
+    try {
+      const user = await this.connector.post<User>(`${this.endpoint}/sign-in`, data);
+
+      return user.data;
+    } catch (e) {
+      throw new Error();
+    }
+  }
+
+  async me() {
+    try {
+      const user = await this.connector.get<User>(`${this.endpoint}/me`);
+
+      return user.data;
+    } catch (e) {
+      throw new Error();
+    }
+  }
+
+  async logout() {
+    try {
+      const user = await this.connector.get<User>(`${this.endpoint}/logout`);
+
+      return user.data;
+    } catch (e) {
+      throw new Error();
+    }
+  }
 }
