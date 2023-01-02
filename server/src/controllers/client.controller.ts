@@ -26,7 +26,7 @@ export default class ClientController extends BaseController {
         sex: yup.string().oneOf(['male', 'female']),
         status: yup.string().oneOf(USER_STATUSES),
         details: yup.string(),
-        fileId: yup.string(),
+        fileId: yup.string().uuid().nullable().defined(),
       });
       await schema.validate(req.body);
       let avatar;

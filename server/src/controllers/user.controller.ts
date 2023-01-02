@@ -47,7 +47,7 @@ export default class UserController extends BaseController {
         email: yup.string().email().required(),
         sex: yup.string().oneOf(USER_SEX),
         password: yup.string().min(2).required(),
-        fileId: yup.string(),
+        fileId: fileId: yup.string().uuid().nullable().defined(),
         role: yup.string().oneOf(ROLES),
       });
       const body = await schema.validate(req.body);
