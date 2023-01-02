@@ -2,9 +2,7 @@ import * as yup from 'yup';
 import environment from 'environment';
 import { type Request, type Response, type NextFunction } from 'express';
 import UserService from 'services/user.service';
-import {
-  RolePermissions, ROLES, TRolePermissions, UserSex, USER_SEX,
-} from 'absctracts';
+import { RolePermissions, ROLES, TRolePermissions, UserSex, USER_SEX } from 'absctracts';
 import FileService from 'services/file.service';
 import { encrypt, isAllowed } from 'helpers';
 import RoleService from 'services/role.service';
@@ -47,7 +45,7 @@ export default class UserController extends BaseController {
         email: yup.string().email().required(),
         sex: yup.string().oneOf(USER_SEX),
         password: yup.string().min(2).required(),
-        fileId: fileId: yup.string().uuid().nullable().defined(),
+        fileId: yup.string().uuid().nullable().defined(),
         role: yup.string().oneOf(ROLES),
       });
       const body = await schema.validate(req.body);
@@ -108,11 +106,11 @@ export default class UserController extends BaseController {
         role: yup.string().oneOf(ROLES),
       });
       const query = await schema.validate(req.query);
-      let requiredPermissions = "";
-      if (query.role === "MANAGER") {
+      let requiredPermissions = '';
+      if (query.role === 'MANAGER') {
         requiredPermissions = 'view_managers';
       }
-      if (query.role === "TRAINER") {
+      if (query.role === 'TRAINER') {
         requiredPermissions = 'view_trainer';
       }
       if (!isAllowed(user, requiredPermissions)) throw new ApiError('Forbidden', 400);
