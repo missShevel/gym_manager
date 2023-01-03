@@ -60,9 +60,7 @@ export default class ClientController extends BaseController {
 
       const responce = await this.service.getAll();
 
-      res.json({
-        data: responce,
-      });
+      res.json(responce);
     } catch (error) {
       this.sendError(next, error);
     }

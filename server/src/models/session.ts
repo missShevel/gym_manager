@@ -21,7 +21,7 @@ export default class Session {
   public data!: Record<string, any>;
 
   // Relations
-  @ManyToOne(() => User, (user) => user.sessions, { nullable: false })
+  @ManyToOne(() => User, (user) => user.sessions, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   public user!: User;
 
