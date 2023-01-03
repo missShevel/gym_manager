@@ -2,14 +2,16 @@ import { configureStore } from '@reduxjs/toolkit';
 import EquipmentsReducer from './reducers/equipments';
 import UserReducer from './reducers/user';
 import UsersReducer from './reducers/users';
+import ClientReducer from './reducers/client';
 
 export const store = configureStore({
-    reducer: {
-      equipment: EquipmentsReducer,
-      user: UserReducer,
-      users: UsersReducer,
-    },
-    devTools: process.env.NODE_ENV !== 'production',
+  reducer: {
+    equipment: EquipmentsReducer,
+    user: UserReducer,
+    users: UsersReducer,
+    client: ClientReducer,
+  },
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export const getStore = () => store;
@@ -23,5 +25,5 @@ export type ThunkOptions = {
 };
 
 export default function getActionType(state: string) {
-    return (action: string) => `${state}/${action}`;
+  return (action: string) => `${state}/${action}`;
 }

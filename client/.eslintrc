@@ -18,7 +18,8 @@
     "no-confusing-arrow": "off",
     "react/jsx-wrap-multilines": "off",
     "import/prefer-default-export": "off",
-    "react/no-array-index-key": "off"
+    "react/no-array-index-key": "off",
+    "jsx-a11y/aria-role": "off"
   },
   "parserOptions": {
     "project": "./tsconfig.json"

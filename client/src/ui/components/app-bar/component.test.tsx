@@ -5,7 +5,7 @@ import AppBar from './component';
 
 describe('AppBar component:', () => {
   it('should render correctly', () => {
-    render(<AppBar data-testid='test-id' />);
+    render(<AppBar data-testid="test-id" />);
 
     const appBar = screen.getByTestId('test-id');
 

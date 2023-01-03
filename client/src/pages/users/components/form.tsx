@@ -1,15 +1,15 @@
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { getStore } from 'store';
-import { File as FileDomain, ROLES } from 'domains';
-import { getEquipments } from 'store/reducers/equipments/thunks';
-import { Box, Button, Form, Stack, TextField } from 'ui/components';
+import { ROLES, File as FileDomain, beautifyRole } from 'domains';
+import { Box, Button, Form, MenuItem, Stack, TextField } from 'ui/components';
 import { forms } from 'localizations';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import UploadImage from 'ui/common/UploadImage';
+// import UploadImage from 'ui/common/UploadImage';
 import { getUsers } from 'store/reducers/users/thunks';
+import UploadImage from 'ui/common/UploadImage';
 
-export interface UsersFormInitial {
+export interface IUsersFormInitial {
   id?: string;
   firstName: string;
   lastName: string;
@@ -19,10 +19,20 @@ export interface UsersFormInitial {
   role: ROLES;
 }
 
+export const UsersFormInitial: IUsersFormInitial = {
+  id: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  sex: '',
+  password: '',
+  role: 'MANAGER',
+};
+
 interface IUsersForm {
   isModalOpen: boolean;
   modalClose: () => void;
-  initialValues: UsersFormInitial;
+  initialValues: IUsersFormInitial;
   onSubmitAction: (data: any) => any;
   modalTitle: string;
   setSelectedFile: (file: File) => any;
@@ -49,14 +59,12 @@ export default function UsersForm({
       .object()
       .strict()
       .shape({
-        name: yup.string().strict().trim().required(),
-        count: yup.number().min(1).max(500).strict().required(),
-        link: yup.string().strict().trim().url(),
         firstName: yup.string().strict().trim().required(),
         lastName: yup.string().strict().trim().required(),
-        sex: yup.string().strict().trim().required(),
         email: yup.string().strict().email().trim().required(),
-        password: yup.string().strict().trim().required()
+        sex: yup.string().strict().trim().required(),
+        password: yup.string().strict().trim().required(),
+        role: yup.string().oneOf(['MANAGER', 'TRAINER']).required(),
       }),
     onSubmit(data) {
       dispatch(onSubmitAction(data))
@@ -79,7 +87,7 @@ export default function UsersForm({
           }}
         >
           <Form onSubmit={form.handleSubmit}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Stack
                 sx={{
                   justifySelf: 'center',
@@ -96,45 +104,72 @@ export default function UsersForm({
                 <TextField
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  value={form.values.name}
-                  name="name"
+                  value={form.values.firstName}
+                  name="firstName"
                   type="text"
-                  label={forms.fields.name.label}
-                  error={Boolean(form.errors.name)}
-                  helperText={form.errors.name}
+                  label={forms.fields.firstName.label}
+                  error={Boolean(form.errors.firstName)}
+                  helperText={form.errors.firstName}
                 />
                 <TextField
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  value={form.values.name}
-                  name="name"
+                  value={form.values.lastName}
+                  name="lastName"
                   type="text"
-                  label={forms.fields.name.label}
-                  error={Boolean(form.errors.name)}
-                  helperText={form.errors.name}
+                  label={forms.fields.lastName.label}
+                  error={Boolean(form.errors.lastName)}
+                  helperText={form.errors.lastName}
                 />
                 <TextField
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  value={form.values.count}
-                  name="count"
-                  type="number"
-                  label={forms.fields.count.label}
-                  error={Boolean(form.errors.count)}
-                  helperText={form.errors.count}
+                  value={form.values.email}
+                  name="email"
+                  type="email"
+                  label={forms.fields.email.label}
+                  error={Boolean(form.errors.email)}
+                  helperText={form.errors.email}
                 />
                 <TextField
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  value={form.values.link}
-                  name="link"
+                  value={form.values.sex}
+                  name="sex"
                   type="text"
-                  label={forms.fields.link.label}
-                  error={Boolean(form.errors.link)}
-                  helperText={form.errors.link}
+                  label={forms.fields.sex.label}
+                  error={Boolean(form.errors.sex)}
+                  select
+                >
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
+                </TextField>
+                <TextField
+                  onChange={form.handleChange}
+                  onBlur={form.handleBlur}
+                  value={form.values.password}
+                  name="password"
+                  type="password"
+                  label={forms.fields.password.label}
+                  error={Boolean(form.errors.password)}
+                  helperText={form.errors.password}
                 />
+                <TextField
+                  onChange={form.handleChange}
+                  onBlur={form.handleBlur}
+                  value={role}
+                  name="role"
+                  type="text"
+                  label={forms.fields.role.label}
+                  error={Boolean(form.errors.role)}
+                  helperText={form.errors.role}
+                  select
+                  disabled
+                >
+                  <MenuItem value={role}>{beautifyRole(role)}</MenuItem>
+                </TextField>
               </Stack>
-            </div>
+            </Box>
             <DialogActions>
               <Button onClick={modalClose}>Cancel</Button>
               <Button type="submit" variant="contained" disabled={!form.isValid} disableElevation>

@@ -4,7 +4,7 @@ import { Role } from './role';
 export interface User {
     id: string;
     firstName: string;
-    lastName: number;
+    lastName: string;
     email: string;
     sex: string;
     passwordHash: string;
@@ -38,5 +38,5 @@ export interface IUpdateUserData {
     password?: string;
     file?: File;
     fileId?: string;
-   
+
 }

@@ -20,6 +20,18 @@ export const forms = {
     password: {
       label: 'Password',
     },
+    firstName: {
+      label: 'Firstname',
+    },
+    lastName: {
+      label: 'Lastname',
+    },
+    sex: {
+      label: 'Sex',
+    },
+    role: {
+      label: 'Role',
+    },
   },
   buttons: {
     submit: {
@@ -40,5 +52,16 @@ export const pages = {
   },
   equipments: {
     header: 'Обладнання',
+  },
+  users: {
+    MANAGER: {
+      header: 'Менеджери',
+    },
+    TRAINER: {
+      header: 'Тренери',
+    },
+  },
+  clients: {
+    header: 'Клієнти',
   },
 };

@@ -6,39 +6,25 @@ import {
   TableRow,
   TableSortLabel,
 } from '@mui/material';
-import { User, File as FileDomain, ROLES } from 'domains';
-import { formatFileName, Order, sortByString } from 'helpers';
-import { useState } from 'react';
-import FileService from 'services/file';
-import { getStore } from 'store';
-import { deleteUser, getUsers } from 'store/reducers/users/thunks';
-import { Button, Paper, Table } from 'ui/components';
-import { IUsersFormInitial, UsersFormInitial } from './form';
+import { Client } from 'domains';
+import { Order, sortByString } from 'helpers';
 
-interface IUsersTableProps {
-  users: User[];
-  handleUpdateModalOpen: () => void;
-  setSelectedFile: (file: File) => any;
-  setOldFile: (file: FileDomain) => any;
-  setInitialValues: (data: IUsersFormInitial) => void;
-  role: ROLES
+import { useState } from 'react';
+import { Button, Paper, Table } from 'ui/components';
+import { getStore } from 'store';
+import { deleteClient, getClients } from 'store/reducers/client/thunks';
+
+interface IClientsTableProps {
+  clients: Client[];
 }
+
 const { dispatch } = getStore();
 
-const fileService = new FileService();
-
-export default function UsersTable({
-  users,
-  handleUpdateModalOpen,
-  setInitialValues,
-  setSelectedFile,
-  setOldFile,
-  role,
-}: IUsersTableProps) {
-  const [rowData, setRowData] = useState(users);
+export default function ClientsTable({ clients }: IClientsTableProps) {
+  const [rowData, setRowData] = useState(clients);
   const [orderDirection, setOrderDirection] = useState<Order>('asc');
 
-  const sortByName = (arr: User[], orderBy: Order) => {
+  const sortByName = (arr: Client[], orderBy: Order) => {
     const full = arr.map((u) => ({
       ...u,
       fullName: `${u.firstName} ${u.lastName}`,
@@ -47,19 +33,19 @@ export default function UsersTable({
   };
 
   const handleNamesSortRequest = () => {
-    setRowData(sortByName(users, orderDirection));
+    setRowData(sortByName(clients, orderDirection));
     setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc');
   };
 
-  const handleEmailSortRequest = () => {
-    setRowData(sortByString(users, orderDirection, 'email'));
+  const handleStatusSortRequest = () => {
+    setRowData(sortByString(clients, orderDirection, 'status'));
     setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc');
   };
 
   const handleDelete = (id: string) => {
-    dispatch(deleteUser(id))
+    dispatch(deleteClient(id))
       .unwrap()
-      .then(() => dispatch(getUsers(role)));
+      .then(() => dispatch(getClients()));
   };
 
   return (
@@ -72,18 +58,18 @@ export default function UsersTable({
                 Name
               </TableSortLabel>
             </TableCell>
-            <TableCell onClick={handleEmailSortRequest}>
+            <TableCell onClick={handleStatusSortRequest}>
               <TableSortLabel active={true} direction={orderDirection}>
-                Email
+                Status
               </TableSortLabel>
             </TableCell>
             <TableCell>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rowData.map((user) => (
+          {rowData.map((client) => (
             <TableRow
-              key={user.id}
+              key={client.id}
               sx={{
                 cursor: 'pointer',
                 '&:hover': {
@@ -93,27 +79,12 @@ export default function UsersTable({
                   backgroundColor: 'grey.300',
                 },
               }}
-              onClick={async () => {
-                setInitialValues({
-                  ...UsersFormInitial,
-                  ...user,
-                  role: user.role.id as ROLES,
-                  password: '',
-                });
-                if (user.avatar) {
-                  setOldFile(user.avatar);
-                  const { blob } = await fileService.getById(user.avatar.id);
-                  const file = new File([blob], formatFileName(user.avatar));
-                  setSelectedFile(file);
-                }
-                handleUpdateModalOpen();
-              }}
             >
               <TableCell component="th" scope="row">
-                {`${user.firstName} ${user.lastName}`}
+                {`${client.firstName} ${client.lastName}`}
               </TableCell>
               <TableCell component="th" scope="row">
-                {user.email}
+                {client.status}
               </TableCell>
               <TableCell>
                 <Button
@@ -131,7 +102,7 @@ export default function UsersTable({
                   }}
                   onClick={(event) => {
                     event.stopPropagation();
-                    handleDelete(user.id);
+                    handleDelete(client.id);
                   }}
                 >
                   Delete

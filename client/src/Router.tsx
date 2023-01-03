@@ -1,4 +1,11 @@
-import { EquipmentsPage, NotFoundPage, RootRedirector, SignInPage, UsersPage } from 'pages';
+import {
+  EquipmentsPage,
+  NotFoundPage,
+  RootRedirector,
+  SignInPage,
+  UsersPage,
+  ClientsPage,
+} from 'pages';
 import { Routes, Route } from 'react-router-dom';
 import { useSelector } from 'store/hooks';
 import Header from 'ui/common/Header';
@@ -45,6 +52,14 @@ function Router() {
             element={
               <PrivateRoute>
                 <UsersPage role="TRAINER" />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/clients"
+            element={
+              <PrivateRoute>
+                <ClientsPage />
               </PrivateRoute>
             }
           />
