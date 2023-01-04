@@ -32,6 +32,12 @@ export const forms = {
     role: {
       label: 'Role',
     },
+    details: {
+      label: 'Details',
+    },
+    status: {
+      label: 'Status',
+    },
   },
   buttons: {
     submit: {

@@ -8,7 +8,7 @@ import { forms } from 'localizations';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import UploadImage from 'ui/common/UploadImage';
 
-export interface EquipmentsFormInitial {
+export interface IEquipmentsFormInitial {
   id?: string;
   name: string;
   count: number;
@@ -18,7 +18,7 @@ export interface EquipmentsFormInitial {
 interface IEquipmentsForm {
   isModalOpen: boolean;
   modalClose: () => void;
-  initialValues: EquipmentsFormInitial;
+  initialValues: IEquipmentsFormInitial;
   onSubmitAction: (data: any) => any;
   modalTitle: string;
   setSelectedFile: (file: File) => any;

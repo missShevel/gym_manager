@@ -13,14 +13,14 @@ import FileService from 'services/file';
 import { getStore } from 'store';
 import { deleteEquipment, getEquipments } from 'store/reducers/equipments/thunks';
 import { Button, Paper, Table } from 'ui/components';
-import { EquipmentsFormInitial } from './form';
+import { IEquipmentsFormInitial } from './form';
 
 interface IEquipmentsTableProps {
   equipments: Equipment[];
   handleUpdateModalOpen: () => void;
   setSelectedFile: (file: File) => any;
   setOldFile: (file: FileDomain) => any;
-  setInitialValues: (data: EquipmentsFormInitial) => void;
+  setInitialValues: (data: IEquipmentsFormInitial) => void;
 }
 const { dispatch } = getStore();
 

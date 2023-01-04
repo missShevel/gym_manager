@@ -5,7 +5,7 @@ import { useSelector } from 'store/hooks';
 import { pages } from 'localizations';
 import { createEquipment, getEquipments, updateEquipment } from 'store/reducers/equipments/thunks';
 import { Box, Typography } from 'ui/components';
-import EquipmentsForm, { EquipmentsFormInitial } from './components/form';
+import EquipmentsForm, { IEquipmentsFormInitial } from './components/form';
 import EquipmentsTable from './components/table';
 import EquipmentToolbar from './components/toolbar';
 
@@ -25,7 +25,7 @@ function EquipmentsPage() {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File>(undefined);
   const [oldFile, setOldFile] = useState<FileDomain>(undefined);
-  const [initialValues, setInitialValues] = useState<EquipmentsFormInitial>({
+  const [initialValues, setInitialValues] = useState<IEquipmentsFormInitial>({
     id: '',
     name: '',
     count: 1,
