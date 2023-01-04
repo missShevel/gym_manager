@@ -101,7 +101,6 @@ export default class EquipmentController extends BaseController {
       const { fileId } = req.body;
       let file = null;
       if (fileId) file = await this.fileService.findById(fileId);
-      console.log(fileId);
 
       if (fileId && !file) {
         throw new ApiError(`File with id ${fileId} was not found`, 400);

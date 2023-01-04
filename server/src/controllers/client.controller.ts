@@ -45,9 +45,7 @@ export default class ClientController extends BaseController {
         avatar,
       });
 
-      res.json({
-        data: responce,
-      });
+      res.json(responce);
     } catch (error) {
       this.sendError(next, error);
     }
@@ -79,9 +77,7 @@ export default class ClientController extends BaseController {
       if (!client) {
         throw new Error(`Client with id ${req.params.id} was not found`);
       }
-      res.json({
-        data: client,
-      });
+      res.json(client);
     } catch (error) {
       this.sendError(next, error);
     }
@@ -124,9 +120,7 @@ export default class ClientController extends BaseController {
       if (fileId) {
         updatedClient = await this.service.updateClientAvatar(updatedClient, file);
       }
-      res.json({
-        data: updatedClient,
-      });
+      res.json(updatedClient);
     } catch (error) {
       this.sendError(next, error);
     }

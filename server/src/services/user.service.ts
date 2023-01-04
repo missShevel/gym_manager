@@ -20,8 +20,15 @@ interface ICreateData {
   email: string;
   sex?: UserSex;
   passwordHash: string;
-  avatar?: File;
+  avatar: File | null;
   role: Role;
+}
+
+export interface IUpdateData {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  sex?: UserSex;
 }
 
 interface ISearchData {
@@ -85,7 +92,8 @@ export default class UserService {
     const qb = database
       .getRepository(User)
       .createQueryBuilder('user')
-      .leftJoinAndSelect('user.role', 'role');
+      .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('user.avatar', 'avatar');
 
     if (data?.role) {
       qb.where('user.roleId = :roleId', { roleId: data.role.id });
@@ -103,5 +111,53 @@ export default class UserService {
     }
 
     return qb.getMany();
+  }
+
+  public async findById(id: string) {
+    return this.repository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        role: true,
+      },
+    });
+  }
+
+  public async deleteUser(user: User) {
+    return this.repository.remove(user);
+  }
+
+  public async updateData(user: User, data: IUpdateData) {
+    if (data.email && user.email !== data.email) {
+      const existingUser = await this.repository.findOne({
+        where: {
+          email: data.email,
+        },
+      });
+
+      if (existingUser) {
+        throw new ApiError('User with such credentials already exists', 400);
+      }
+    }
+    const updateData = this.repository.merge(user, data);
+
+    return this.repository.save(updateData);
+  }
+
+  public async updateAvatar(user: User, file: File | null) {
+    const updateData = this.repository.merge(user, {
+      avatar: file,
+    });
+
+    return this.repository.save(updateData);
+  }
+
+  public async updatePassword(user: User, passwordHash: string) {
+    const updateData = this.repository.merge(user, {
+      passwordHash,
+    });
+
+    return this.repository.save(updateData);
   }
 }

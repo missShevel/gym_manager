@@ -11,5 +11,7 @@ router.post('/', authenticator, userController.create.bind(userController));
 router.get('/', authenticator, userController.getAll.bind(userController));
 router.get('/me', authenticator, userController.getMe.bind(userController));
 router.get('/logout', authenticator, userController.logOut.bind(userController));
+router.delete('/:id', authenticator, userController.deleteById.bind(userController));
+router.put('/:id', authenticator, userController.updateById.bind(userController));
 
 export default router;

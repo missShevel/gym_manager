@@ -1,8 +1,10 @@
 import * as yup from 'yup';
 import environment from 'environment';
 import { type Request, type Response, type NextFunction } from 'express';
-import UserService from 'services/user.service';
-import { RolePermissions, ROLES, TRolePermissions, UserSex, USER_SEX } from 'absctracts';
+import UserService, { IUpdateData } from 'services/user.service';
+import {
+  RolePermissions, ROLES, TRolePermissions, UserSex, USER_SEX,
+} from 'absctracts';
 import FileService from 'services/file.service';
 import { encrypt, isAllowed } from 'helpers';
 import RoleService from 'services/role.service';
@@ -49,7 +51,7 @@ export default class UserController extends BaseController {
         role: yup.string().oneOf(ROLES),
       });
       const body = await schema.validate(req.body);
-      let avatar;
+      let avatar = null;
       if (req.body.fileId) {
         avatar = await this.fileService.findById(req.body.fileId);
         if (!avatar) {
@@ -125,6 +127,76 @@ export default class UserController extends BaseController {
       });
 
       res.json(users);
+    } catch (error) {
+      this.sendError(next, error);
+    }
+  }
+
+  public async deleteById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { user } = res.locals;
+      const userId = req.params.id;
+      const userToDelete = await this.service.findById(userId);
+      if (!userToDelete) {
+        throw new ApiError(`User with id ${userId} was not found`, 400);
+      }
+      const permission = RolePermissions[userToDelete.role.id as keyof TRolePermissions].remove;
+      if (!isAllowed(user, permission)) throw new ApiError('Forbidden', 400);
+
+      await this.service.deleteUser(userToDelete);
+
+      res.json({
+        data: userToDelete,
+        deleted: true,
+      });
+    } catch (error) {
+      this.sendError(next, error);
+    }
+  }
+
+  public async updateById(req: Request, res: Response, next: NextFunction) {
+    const { user } = res.locals;
+
+    try {
+      const schema = yup.object().noUnknown(true).shape({
+        firstName: yup.string().required(),
+        lastName: yup.string().required(),
+        email: yup.string().email().required(),
+        sex: yup.string().oneOf(USER_SEX),
+        password: yup.string().min(2).nullable().defined(),
+        fileId: yup.string().uuid().nullable().defined(),
+      });
+      const body = await schema.validate(req.body);
+      const userId = req.params.id;
+      let userToupdate = await this.service.findById(userId);
+      if (!userToupdate) {
+        throw new ApiError(`User with id ${userId} was not found`, 400);
+      }
+      const permission = RolePermissions[userToupdate.role.id as keyof TRolePermissions].edit;
+      if (!isAllowed(user, permission)) throw new ApiError('Forbidden', 400);
+      const { fileId } = body;
+      let file = null;
+      if (fileId) file = await this.fileService.findById(fileId);
+
+      if (fileId && !file) {
+        throw new ApiError(`File with id ${fileId} was not found`, 400);
+      }
+
+      const updateData: IUpdateData = {
+        firstName: body.firstName,
+        lastName: body.lastName,
+        email: body.email,
+        sex: body.sex as UserSex,
+      };
+
+      userToupdate = await this.service.updateData(userToupdate, updateData);
+      userToupdate = await this.service.updateAvatar(userToupdate, file);
+
+      if (body.password) {
+        const passwordHash = await encrypt(body.password);
+        userToupdate = await this.service.updatePassword(userToupdate, passwordHash);
+      }
+      res.json(userToupdate);
     } catch (error) {
       this.sendError(next, error);
     }
