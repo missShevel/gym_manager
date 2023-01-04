@@ -57,7 +57,7 @@ export default function ClientForm({
         firstName: yup.string().strict().trim().required(),
         lastName: yup.string().strict().trim().required(),
         sex: yup.string().strict().trim().required(),
-        status: yup.string().oneOf(CLIENT_STATUS).required(),
+        status: yup.string().strict().oneOf(CLIENT_STATUS).required(),
         details: yup.string().strict(),
       }),
     onSubmit(data) {

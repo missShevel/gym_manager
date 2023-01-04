@@ -6,21 +6,34 @@ import {
   TableRow,
   TableSortLabel,
 } from '@mui/material';
-import { Client } from 'domains';
-import { Order, sortByString } from 'helpers';
-
+import { Client, File as FileDomain } from 'domains';
+import { formatFileName, Order, sortByString } from 'helpers';
 import { useState } from 'react';
+import FileService from 'services/file';
 import { Button, Paper, Table } from 'ui/components';
 import { getStore } from 'store';
 import { deleteClient, getClients } from 'store/reducers/client/thunks';
+import { IClientFormInitial } from './form';
 
 interface IClientsTableProps {
   clients: Client[];
+  handleUpdateModalOpen: () => void;
+  setSelectedFile: (file: File) => any;
+  setOldFile: (file: FileDomain) => any;
+  setInitialValues: (data: IClientFormInitial) => void;
 }
 
 const { dispatch } = getStore();
 
-export default function ClientsTable({ clients }: IClientsTableProps) {
+const fileService = new FileService();
+
+export default function ClientsTable({
+  clients,
+  handleUpdateModalOpen,
+  setInitialValues,
+  setSelectedFile,
+  setOldFile,
+}: IClientsTableProps) {
   const [rowData, setRowData] = useState(clients);
   const [orderDirection, setOrderDirection] = useState<Order>('asc');
 
@@ -78,6 +91,18 @@ export default function ClientsTable({ clients }: IClientsTableProps) {
                 '&:active': {
                   backgroundColor: 'grey.300',
                 },
+              }}
+              onClick={async () => {
+                setInitialValues({
+                  ...client,
+                });
+                if (client.avatar) {
+                  setOldFile(client.avatar);
+                  const { blob } = await fileService.getById(client.avatar.id);
+                  const file = new File([blob], formatFileName(client.avatar));
+                  setSelectedFile(file);
+                }
+                handleUpdateModalOpen();
               }}
             >
               <TableCell component="th" scope="row">

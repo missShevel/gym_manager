@@ -4,10 +4,10 @@ import { pages } from 'localizations';
 import { useEffect, useState } from 'react';
 import { getStore } from 'store';
 import { useSelector } from 'store/hooks';
-import { createClient, getClients } from 'store/reducers/client/thunks';
+import { createClient, updateClient, getClients } from 'store/reducers/client/thunks';
 import ClientsTable from './components/table';
 import ClientToolbar from './components/toolbar';
-import ClientsForm from './components/form';
+import ClientForm, { IClientFormInitial, ClientFormInitial } from './components/form';
 
 function ClientsPage() {
   const { dispatch } = getStore();
@@ -15,24 +15,31 @@ function ClientsPage() {
   const { data, isLoading } = useSelector((store) => store.client);
   const { data: user } = useSelector((store) => store.user);
 
+  useEffect(() => {
+    if (user) {
+      dispatch(getClients());
+    }
+  }, [user]);
+
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File>(undefined);
   const [oldFile, setOldFile] = useState<FileDomain>(undefined);
-
-  // const [initialValues, setInitialValues] = useState<ClientsFormInitial>({
-  //   id: '',
-  //   name: '',
-  //   count: 1,
-  //   link: '',
-  // });
+  const [initialValues, setInitialValues] = useState<IClientFormInitial>(ClientFormInitial);
 
   const handleCreateModalOpen = () => {
     setCreateModalOpen(true);
   };
 
+  const handleUpdateModalOpen = () => {
+    setUpdateModalOpen(true);
+  };
+
   const handleClose = () => {
     setSelectedFile(undefined);
+    setOldFile(undefined);
     setCreateModalOpen(false);
+    setUpdateModalOpen(false);
   };
 
   const handleCreateClient = (formData) =>
@@ -41,11 +48,13 @@ function ClientsPage() {
       file: selectedFile,
     });
 
-  useEffect(() => {
-    if (user) {
-      dispatch(getClients());
-    }
-  }, [user]);
+  const handleUpdateClient = (formData) =>
+    updateClient({
+      ...formData,
+      id: initialValues.id,
+      file: selectedFile,
+      fileId: oldFile?.id,
+    });
 
   if (isLoading) return <Typography>Loading...</Typography>;
 
@@ -56,20 +65,30 @@ function ClientsPage() {
       }}
     >
       <Typography variant="h3">{pages.clients.header}</Typography>
-      <ClientsTable clients={data} />
+      <ClientsTable
+        clients={data}
+        handleUpdateModalOpen={handleUpdateModalOpen}
+        setInitialValues={setInitialValues}
+        setSelectedFile={setSelectedFile}
+        setOldFile={setOldFile}
+      />
       <ClientToolbar handleCreateModalOpen={handleCreateModalOpen} />
-      <ClientsForm
+      <ClientForm
         isModalOpen={createModalOpen}
         modalClose={handleClose}
         onSubmitAction={handleCreateClient}
         modalTitle="Create New Client"
-        initialValues={{
-          firstName: '',
-          lastName: '',
-          sex: '',
-          status: 'Beginner',
-          details: '',
-        }}
+        initialValues={initialValues}
+        selectedFile={selectedFile}
+        setSelectedFile={setSelectedFile}
+        setOldFile={setOldFile}
+      />
+      <ClientForm
+        isModalOpen={updateModalOpen}
+        modalClose={handleClose}
+        onSubmitAction={handleUpdateClient}
+        modalTitle="Update Client"
+        initialValues={initialValues}
         selectedFile={selectedFile}
         setSelectedFile={setSelectedFile}
         setOldFile={setOldFile}
