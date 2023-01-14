@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build docker image
-        run: docker build -t ${{secrets.DOCKER_USER}}/gym_manager_api:latest .
+        run: docker build -t ${{secrets.DOCKER_USER}}/gym_manager_api:latest ./server
       - name: Login to docker hub
         env:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build docker image
-        run: docker build -t ${{secrets.DOCKER_USER}}/gym_manager_client:latest .
+        run: docker build -t ${{secrets.DOCKER_USER}}/gym_manager_client:latest ./client
       - name: Login to docker hub
         env:
           DOCKER_USER: ${{secrets.DOCKER_USER}}
