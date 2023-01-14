@@ -1,6 +1,9 @@
 import { DataSource } from 'typeorm';
 import environment from 'environment';
 
+const baseEntityFolder = environment.NODE_ENV === 'production' ? 'dist/src' : 'src';
+const baseMigrationFolder = environment.NODE_ENV === 'production' ? 'dist/migrations/' : 'migrations/';
+
 const database = new DataSource({
   type: 'postgres',
   host: environment.DB_HOST,
@@ -10,10 +13,11 @@ const database = new DataSource({
   database: environment.DB_NAME,
 
   synchronize: true,
-  entities: ['src/models/*.ts'],
+  entities: [`${baseEntityFolder}/models/*.{ts,js}`],
 
   migrationsTableName: 'TypeORM_migrations',
-  migrations: ['migrations/*.ts'],
+  migrations: [`${baseMigrationFolder}/*.{ts,js}`],
+  migrationsRun: true,
 
   logging: ['error', 'migration'],
 });

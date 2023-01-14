@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "target": "ES2020",
+    "module": "CommonJS", /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "experimentalDecorators": true /* Enable experimental support for TC39 stage 2 draft decorators. */,
     "emitDecoratorMetadata": true /* Emit design-type metadata for decorated declarations in source files. */,
     "moduleResolution": "node" /* Specify what module code is generated. */,

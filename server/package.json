@@ -6,14 +6,15 @@
     "start:db": "docker-compose up -d",
     "stop:db": "docker-compose down",
     "start": "nodemon src/index.ts",
-    "start:prod": "ts-node src/index.ts",
     "eslint": "eslint --cache --ignore-path .gitignore",
     "eslint:fix": "eslint --cache --fix --ignore-path .gitignore",
     "prettier": "prettier --cache --check . --ignore-path .gitignore",
     "prettier:fix": "prettier --cache --write . --ignore-path .gitignore",
     "prepare": "husky install",
     "migration:run": "typeorm-ts-node-esm migration:run -d ./src/database/index.ts",
-    "migration:undo": "typeorm-ts-node-esm migration:revert -d ./src/database/index.ts"
+    "migration:undo": "typeorm-ts-node-esm migration:revert -d ./src/database/index.ts",
+    "build": "tsc -b",
+    "start:prod": "node ./dist/src/index.js"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
