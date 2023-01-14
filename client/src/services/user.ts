@@ -1,4 +1,5 @@
 import { ISignInData, User, ICreateUserData, IUpdateUserData, ROLES } from 'domains';
+import { mapErrorByCode } from 'helpers';
 import Service from './BaseService';
 import FileService from './file';
 
@@ -13,7 +14,17 @@ export default class UserService extends Service {
 
       return res.data;
     } catch (e) {
-      throw new Error();
+      throw new Error(mapErrorByCode(e.response.data.code));
+    }
+  }
+
+  public async getShortlist(role: ROLES) {
+    try {
+      const res = await this.connector.get<User[]>(`${this.endpoint}/shortList?role=${role}`);
+
+      return res.data;
+    } catch (e) {
+      throw new Error(mapErrorByCode(e.response.data.code));
     }
   }
 
@@ -32,8 +43,7 @@ export default class UserService extends Service {
 
       return res.data;
     } catch (e) {
-      console.log(e);
-      throw e;
+      throw new Error(mapErrorByCode(e.response.data.code));
     }
   }
 
@@ -55,7 +65,7 @@ export default class UserService extends Service {
       });
       return res.data;
     } catch (e) {
-      throw new Error();
+      throw new Error(mapErrorByCode(e.response.data.code));
     }
   }
 
@@ -65,7 +75,7 @@ export default class UserService extends Service {
 
       return res.data;
     } catch (e) {
-      throw new Error();
+      throw new Error(mapErrorByCode(e.response.data.code));
     }
   }
 
@@ -75,7 +85,9 @@ export default class UserService extends Service {
 
       return user.data;
     } catch (e) {
-      throw new Error();
+      if (e.response) {
+        throw new Error(mapErrorByCode(e.response.data.code));
+      }
     }
   }
 
@@ -85,7 +97,7 @@ export default class UserService extends Service {
 
       return user.data;
     } catch (e) {
-      throw new Error();
+      throw new Error(mapErrorByCode(e.response.data.code));
     }
   }
 
@@ -95,7 +107,7 @@ export default class UserService extends Service {
 
       return user.data;
     } catch (e) {
-      throw new Error();
+      throw new Error(mapErrorByCode(e.response.data.code));
     }
   }
 }

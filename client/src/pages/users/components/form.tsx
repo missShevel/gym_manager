@@ -8,6 +8,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material
 // import UploadImage from 'ui/common/UploadImage';
 import { getUsers } from 'store/reducers/users/thunks';
 import UploadImage from 'ui/common/UploadImage';
+import { setMessage } from 'store/reducers/error/actions';
 
 export interface IUsersFormInitial {
   id?: string;
@@ -55,23 +56,24 @@ export default function UsersForm({
   const { dispatch } = getStore();
   const form = useFormik({
     initialValues,
-    validationSchema: yup
-      .object()
-      .strict()
-      .shape({
-        firstName: yup.string().strict().trim().required(),
-        lastName: yup.string().strict().trim().required(),
-        email: yup.string().strict().email().trim().required(),
-        sex: yup.string().strict().trim().required(),
-        password: yup.string().strict().trim().required(),
-        role: yup.string().oneOf(['MANAGER', 'TRAINER']).required(),
-      }),
+    validationSchema: yup.object().strict().shape({
+      firstName: yup.string().strict().trim().required(),
+      lastName: yup.string().strict().trim().required(),
+      email: yup.string().strict().email().trim().required(),
+      sex: yup.string().strict().trim().required(),
+      password: yup.string().strict().trim().required(),
+    }),
     onSubmit(data) {
       dispatch(onSubmitAction(data))
         .unwrap()
         .then(() => {
-          dispatch(getUsers(role));
           modalClose();
+        })
+        .catch((e) => {
+          dispatch(setMessage(e.message));
+        })
+        .finally(() => {
+          dispatch(getUsers(role));
         });
     },
     enableReinitialize: true,

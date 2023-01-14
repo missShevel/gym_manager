@@ -19,7 +19,13 @@ export default class EquipmentController extends BaseController {
   public async create(req: Request, res: Response, next: NextFunction) {
     try {
       const { user } = res.locals;
-      if (!isAllowed(user, 'add_equipments')) throw new ApiError('Forbidden', 400);
+      if (!isAllowed(user, 'add_equipments')) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
 
       // 2. validation (req.body)
       const schema = yup.object().shape({
@@ -33,7 +39,11 @@ export default class EquipmentController extends BaseController {
       if (req.body.fileId) {
         avatar = await this.fileService.findById(req.body.fileId);
         if (!avatar) {
-          throw new ApiError(`Avatar with id ${req.body.fileId} was not found`, 400);
+          throw new ApiError({
+            message: `Avatar with id ${req.body.fileId} was not found`,
+            status: 400,
+            code: 'FILE_NOT_FOUND',
+          });
         }
       }
       const responce = await this.service.create({
@@ -52,7 +62,13 @@ export default class EquipmentController extends BaseController {
   public async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const { user } = res.locals;
-      if (!isAllowed(user, 'view_equipments')) throw new ApiError('Forbidden', 400);
+      if (!isAllowed(user, 'view_equipments')) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
 
       const responce = await this.service.getAll();
       res.json(responce);
@@ -64,7 +80,13 @@ export default class EquipmentController extends BaseController {
   public async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const { user } = res.locals;
-      if (!isAllowed(user, 'view_equipments')) throw new ApiError('Forbidden', 400);
+      if (!isAllowed(user, 'view_equipments')) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
 
       const schema = yup.object().shape({
         id: yup.string().uuid().required(),
@@ -72,7 +94,11 @@ export default class EquipmentController extends BaseController {
       await schema.validate(req.params);
       const equipment = await this.service.findById(req.params.id);
       if (!equipment) {
-        throw new ApiError(`Equipment with id ${req.params.id} was not found`, 400);
+        throw new ApiError({
+          message: `Equipment with id ${req.params.id} was not found`,
+          status: 400,
+          code: 'EQUIPMENT_NOT_FOUND',
+        });
       }
       res.json(equipment);
     } catch (error) {
@@ -83,13 +109,23 @@ export default class EquipmentController extends BaseController {
   public async updateById(req: Request, res: Response, next: NextFunction) {
     try {
       const { user } = res.locals;
-      if (!isAllowed(user, 'edit_equipments')) throw new ApiError('Forbidden', 400);
+      if (!isAllowed(user, 'edit_equipments')) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
 
       const equipmentId = req.params.id;
       const equipment = await this.service.findById(equipmentId);
 
       if (!equipment) {
-        throw new ApiError(`Equipment with id ${equipmentId} was not found`, 400);
+        throw new ApiError({
+          message: `Equipment with id ${equipmentId} was not found`,
+          status: 400,
+          code: 'EQUIPMENT_NOT_FOUND',
+        });
       }
       const schema = yup.object().shape({
         name: yup.string().min(2).max(200),
@@ -103,7 +139,11 @@ export default class EquipmentController extends BaseController {
       if (fileId) file = await this.fileService.findById(fileId);
 
       if (fileId && !file) {
-        throw new ApiError(`File with id ${fileId} was not found`, 400);
+        throw new ApiError({
+          message: `File with id ${fileId} was not found`,
+          status: 400,
+          code: 'FILE_NOT_FOUND',
+        });
       }
       const updateData: IUpdateEquipment = {
         name: req.body.name,
@@ -123,12 +163,21 @@ export default class EquipmentController extends BaseController {
   public async deleteById(req: Request, res: Response, next: NextFunction) {
     try {
       const { user } = res.locals;
-      if (!isAllowed(user, 'remove_equipments')) throw new ApiError('Forbidden', 400);
-
+      if (!isAllowed(user, 'remove_equipments')) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
       const equipmentId = req.params.id;
       const equipment = await this.service.findById(equipmentId);
       if (!equipment) {
-        throw new ApiError(`Client with id ${equipmentId} was not found`);
+        throw new ApiError({
+          message: `Equipment with id ${equipmentId} was not found`,
+          status: 400,
+          code: 'EQUIPMENT_NOT_FOUND',
+        });
       }
 
       const removedEquipment = await this.service.deleteEquipment(equipment);

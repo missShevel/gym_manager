@@ -11,6 +11,7 @@ import { formatFileName, Order, sortByString } from 'helpers';
 import { useState } from 'react';
 import FileService from 'services/file';
 import { getStore } from 'store';
+import { setMessage } from 'store/reducers/error/actions';
 import { deleteUser, getUsers } from 'store/reducers/users/thunks';
 import { Button, Paper, Table } from 'ui/components';
 import { IUsersFormInitial, UsersFormInitial } from './form';
@@ -21,7 +22,7 @@ interface IUsersTableProps {
   setSelectedFile: (file: File) => any;
   setOldFile: (file: FileDomain) => any;
   setInitialValues: (data: IUsersFormInitial) => void;
-  role: ROLES
+  role: ROLES;
 }
 const { dispatch } = getStore();
 
@@ -59,7 +60,8 @@ export default function UsersTable({
   const handleDelete = (id: string) => {
     dispatch(deleteUser(id))
       .unwrap()
-      .then(() => dispatch(getUsers(role)));
+      .catch((e) => dispatch(setMessage(e.message)))
+      .finally(() => dispatch(getUsers(role)));
   };
 
   return (

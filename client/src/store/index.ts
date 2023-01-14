@@ -3,6 +3,7 @@ import EquipmentsReducer from './reducers/equipments';
 import UserReducer from './reducers/user';
 import UsersReducer from './reducers/users';
 import ClientReducer from './reducers/client';
+import ErrorReducer from './reducers/error';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     user: UserReducer,
     users: UsersReducer,
     client: ClientReducer,
+    error: ErrorReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

@@ -1,17 +1,14 @@
 import { ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { User } from 'domains';
-import { useNavigate } from 'react-router';
 import { Box, List } from 'ui/components';
-import { sidebarItems, TSidebatItem } from './constants';
-import { sidebarPermissionFilter } from './helpers';
+import { useNavigate } from 'react-router';
+import { TSidebatItem } from './constants';
 
 interface ISidebarProps {
-  user: User;
+  sidebarItemsFiltered: TSidebatItem[];
 }
 
-export default function Sidebar({ user }: ISidebarProps) {
+export default function Sidebar({ sidebarItemsFiltered }: ISidebarProps) {
   const navigate = useNavigate();
-  const sidebarItemsFiltered = sidebarItems.filter(sidebarPermissionFilter(user));
 
   const handleItemClick = (item: TSidebatItem) => {
     navigate(item.url);

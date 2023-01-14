@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ISignInData } from 'domains';
 import UserService from 'services/user';
@@ -5,15 +6,9 @@ import Types from './types';
 
 const service = new UserService();
 
-export const signIn = createAsyncThunk(Types.signIn, async (data: ISignInData) => {
-  try {
-    const user = await service.signIn(data);
-
-    return user;
-  } catch (e) {
-    console.log(e);
-  }
-});
+export const signIn = createAsyncThunk(Types.signIn, async (data: ISignInData) =>
+  service.signIn(data),
+);
 
 interface IAutoLogin {
   onLoginFail: Function;
@@ -32,16 +27,11 @@ export const autoLogin = createAsyncThunk(
     } catch (e) {
       console.log(e);
       onLoginFail();
+      throw e;
     }
   },
 );
 
-export const logout = createAsyncThunk(Types.logout, async () => {
-  try {
-    await service.logout();
-  } catch (e) {
-    console.log(e);
-  }
-});
+export const logout = createAsyncThunk(Types.logout, async () => service.logout());
 
 export default {};

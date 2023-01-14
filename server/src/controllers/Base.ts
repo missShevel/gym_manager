@@ -13,15 +13,23 @@ export default class BaseController {
     }
 
     if (error instanceof ValidationError) {
-      next(new ApiError('Validation error', 400));
+      next(new ApiError({
+        message: 'Validation error',
+        status: 400,
+        code: 'VALIDATION_ERROR',
+      }));
       return;
     }
 
     if (error instanceof EntityNotFoundError) {
-      next(new ApiError(`Entity not found: ${error.message}`, 400));
+      next(new ApiError({
+        message: `Entity not found: ${error.message}`,
+        status: 404,
+        code: 'NOT_FOUND',
+      }));
       return;
     }
 
-    next(new ApiError());
+    next(new ApiError({}));
   }
 }

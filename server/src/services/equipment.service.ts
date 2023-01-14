@@ -1,6 +1,6 @@
-import EquipmentRepository from '../repositories/equipment.repository';
 import File from 'models/file';
 import Equipment from 'models/equipment';
+import EquipmentRepository from '../repositories/equipment.repository';
 
 interface ICreateEquipment {
   name: string;

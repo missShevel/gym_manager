@@ -4,10 +4,10 @@ import { name } from './constants';
 const getType = getActionType(name);
 
 const Types = {
-    getAll: getType('getAll'),
-    create: getType('create'),
-    update: getType('update'),
-    delete: getType('delete'),
+  getAll: getType('getAll'),
+  create: getType('create'),
+  update: getType('update'),
+  delete: getType('delete'),
 };
 
 export default Types;

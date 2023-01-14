@@ -1,4 +1,6 @@
+import { isAllowed } from 'helpers';
 import { forms } from 'localizations';
+import { useSelector } from 'store/hooks';
 import { Box, Button } from 'ui/components';
 
 interface IEquipmentToolbarProps {
@@ -6,6 +8,8 @@ interface IEquipmentToolbarProps {
 }
 
 export default function EquipmentToolbar({ handleCreateModalOpen }: IEquipmentToolbarProps) {
+  const { data: user } = useSelector((store) => store.user);
+
   return (
     <Box
       sx={{
@@ -14,13 +18,11 @@ export default function EquipmentToolbar({ handleCreateModalOpen }: IEquipmentTo
         padding: 3,
       }}
     >
-      <Button variant="contained" onClick={handleCreateModalOpen}>
-        {forms.buttons.create.label}
-      </Button>
-
-      {/* <Box>
-        <TextField placeholder="Search" />
-      </Box> */}
+      {isAllowed(user, 'add_equipments') ? (
+        <Button variant="contained" onClick={handleCreateModalOpen}>
+          {forms.buttons.create.label}
+        </Button>
+      ) : null}
     </Box>
   );
 }

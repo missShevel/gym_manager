@@ -6,10 +6,12 @@ import {
   TableRow,
   TableSortLabel,
 } from '@mui/material';
-import { Client, File as FileDomain } from 'domains';
-import { formatFileName, Order, sortByString } from 'helpers';
+import { beautifyTrainer, Client, File as FileDomain } from 'domains';
+import { formatFileName, isAllowed, Order, sortByString } from 'helpers';
 import { useState } from 'react';
 import FileService from 'services/file';
+import { setMessage } from 'store/reducers/error/actions';
+import { useSelector } from 'store/hooks';
 import { Button, Paper, Table } from 'ui/components';
 import { getStore } from 'store';
 import { deleteClient, getClients } from 'store/reducers/client/thunks';
@@ -36,6 +38,7 @@ export default function ClientsTable({
 }: IClientsTableProps) {
   const [rowData, setRowData] = useState(clients);
   const [orderDirection, setOrderDirection] = useState<Order>('asc');
+  const { data: user } = useSelector((store) => store.user);
 
   const sortByName = (arr: Client[], orderBy: Order) => {
     const full = arr.map((u) => ({
@@ -45,8 +48,28 @@ export default function ClientsTable({
     return sortByString(full, orderBy, 'fullName');
   };
 
+  const sortByTrainerName = (arr: Client[], orderBy: Order) => {
+    const trainers = arr.map((c) => ({
+      ...(c.trainer || {}),
+      clientId: c.id,
+    }));
+    const full = trainers.map((u) => ({
+      ...u,
+      // @ts-ignore
+      fullName: u.firstName ? `${u.firstName} ${u.lastName}` : '',
+    }));
+    const sortedTrainers = sortByString(full, orderBy, 'fullName');
+
+    return sortedTrainers.map((t) => arr.find((c) => c.id === t.clientId));
+  };
+
   const handleNamesSortRequest = () => {
     setRowData(sortByName(clients, orderDirection));
+    setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handleTrainersSortRequest = () => {
+    setRowData(sortByTrainerName(clients, orderDirection));
     setOrderDirection(orderDirection === 'asc' ? 'desc' : 'asc');
   };
 
@@ -58,7 +81,8 @@ export default function ClientsTable({
   const handleDelete = (id: string) => {
     dispatch(deleteClient(id))
       .unwrap()
-      .then(() => dispatch(getClients()));
+      .catch((e) => dispatch(setMessage(e.message)))
+      .finally(() => dispatch(getClients()));
   };
 
   return (
@@ -76,7 +100,12 @@ export default function ClientsTable({
                 Status
               </TableSortLabel>
             </TableCell>
-            <TableCell>Delete</TableCell>
+            <TableCell onClick={handleTrainersSortRequest}>
+              <TableSortLabel active={true} direction={orderDirection}>
+                Trainer
+              </TableSortLabel>
+            </TableCell>
+            {isAllowed(user, 'remove_clients') ? <TableCell>Delete</TableCell> : null}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -95,6 +124,7 @@ export default function ClientsTable({
               onClick={async () => {
                 setInitialValues({
                   ...client,
+                  trainerId: client.trainer?.id || null,
                 });
                 if (client.avatar) {
                   setOldFile(client.avatar);
@@ -111,28 +141,33 @@ export default function ClientsTable({
               <TableCell component="th" scope="row">
                 {client.status}
               </TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  component="th"
-                  scope="row"
-                  sx={{
-                    color: 'error.main',
-                    borderColor: 'error.main',
-                    '&:hover': {
-                      backgroundColor: 'error.main',
-                      color: 'error.contrastText',
-                      borderColor: 'error.main',
-                    },
-                  }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleDelete(client.id);
-                  }}
-                >
-                  Delete
-                </Button>
+              <TableCell component="th" scope="row">
+                {beautifyTrainer(client.trainer)}
               </TableCell>
+              {isAllowed(user, 'remove_clients') ? (
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    component="th"
+                    scope="row"
+                    sx={{
+                      color: 'error.main',
+                      borderColor: 'error.main',
+                      '&:hover': {
+                        backgroundColor: 'error.main',
+                        color: 'error.contrastText',
+                        borderColor: 'error.main',
+                      },
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleDelete(client.id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              ) : null}
             </TableRow>
           ))}
         </TableBody>

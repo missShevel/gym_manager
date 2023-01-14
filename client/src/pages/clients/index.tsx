@@ -4,12 +4,14 @@ import { pages } from 'localizations';
 import { useEffect, useState } from 'react';
 import { getStore } from 'store';
 import { useSelector } from 'store/hooks';
+import { errorMapper } from 'helpers';
 import { createClient, updateClient, getClients } from 'store/reducers/client/thunks';
+import { setMessage } from 'store/reducers/error/actions';
 import ClientsTable from './components/table';
 import ClientToolbar from './components/toolbar';
 import ClientForm, { IClientFormInitial, ClientFormInitial } from './components/form';
 
-function ClientsPage() {
+function ClientsPage({ baseRedirect }: { baseRedirect: () => void }) {
   const { dispatch } = getStore();
 
   const { data, isLoading } = useSelector((store) => store.client);
@@ -17,7 +19,14 @@ function ClientsPage() {
 
   useEffect(() => {
     if (user) {
-      dispatch(getClients());
+      dispatch(getClients())
+        .unwrap()
+        .catch((e) => {
+          dispatch(setMessage(e.message));
+          if (e.message === errorMapper.PERMISSION_DENIED) {
+            baseRedirect();
+          }
+        });
     }
   }, [user]);
 
@@ -28,6 +37,7 @@ function ClientsPage() {
   const [initialValues, setInitialValues] = useState<IClientFormInitial>(ClientFormInitial);
 
   const handleCreateModalOpen = () => {
+    setInitialValues(ClientFormInitial);
     setCreateModalOpen(true);
   };
 
@@ -36,6 +46,7 @@ function ClientsPage() {
   };
 
   const handleClose = () => {
+    setInitialValues(ClientFormInitial);
     setSelectedFile(undefined);
     setOldFile(undefined);
     setCreateModalOpen(false);

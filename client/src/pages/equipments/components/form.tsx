@@ -7,6 +7,10 @@ import { Box, Button, Form, Stack, TextField } from 'ui/components';
 import { forms } from 'localizations';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import UploadImage from 'ui/common/UploadImage';
+import { setMessage } from 'store/reducers/error/actions';
+import { useSelector } from 'store/hooks';
+import { useMemo } from 'react';
+import { isAllowed } from 'helpers';
 
 export interface IEquipmentsFormInitial {
   id?: string;
@@ -37,6 +41,7 @@ export default function EquipmentsForm({
   setOldFile,
 }: IEquipmentsForm) {
   const { dispatch } = getStore();
+  const { data: user } = useSelector((store) => store.user);
   const form = useFormik({
     initialValues,
     validationSchema: yup
@@ -50,13 +55,15 @@ export default function EquipmentsForm({
     onSubmit(data) {
       dispatch(onSubmitAction(data))
         .unwrap()
-        .then(() => {
+        .catch((e) => dispatch(setMessage(e.message)))
+        .finally(() => {
           dispatch(getEquipments());
           modalClose();
         });
     },
     enableReinitialize: true,
   });
+  const canEdit = useMemo(() => isAllowed(user, 'edit_equipments'), [user]);
 
   return (
     <Box>
@@ -74,12 +81,14 @@ export default function EquipmentsForm({
                   justifySelf: 'center',
                 }}
               >
-                <UploadImage
-                  title="Upload image"
-                  setSelectedFile={setSelectedFile}
-                  selectedFile={selectedFile}
-                  onCancelSelection={() => setOldFile(undefined)}
-                />
+                {canEdit ? (
+                  <UploadImage
+                    title="Upload image"
+                    setSelectedFile={setSelectedFile}
+                    selectedFile={selectedFile}
+                    onCancelSelection={() => setOldFile(undefined)}
+                  />
+                ) : null}
               </Stack>
               <Stack gap={2} sx={{ justifySelf: 'right', width: '50%' }}>
                 <TextField
@@ -91,6 +100,7 @@ export default function EquipmentsForm({
                   label={forms.fields.name.label}
                   error={Boolean(form.errors.name)}
                   helperText={form.errors.name}
+                  disabled={!canEdit}
                 />
                 <TextField
                   onChange={form.handleChange}
@@ -101,6 +111,7 @@ export default function EquipmentsForm({
                   label={forms.fields.count.label}
                   error={Boolean(form.errors.count)}
                   helperText={form.errors.count}
+                  disabled={!canEdit}
                 />
                 <TextField
                   onChange={form.handleChange}
@@ -111,14 +122,17 @@ export default function EquipmentsForm({
                   label={forms.fields.link.label}
                   error={Boolean(form.errors.link)}
                   helperText={form.errors.link}
+                  disabled={!canEdit}
                 />
               </Stack>
             </div>
             <DialogActions>
-              <Button onClick={modalClose}>Cancel</Button>
-              <Button type="submit" variant="contained" disabled={!form.isValid} disableElevation>
-                {forms.buttons.submit.label}
-              </Button>
+              <Button onClick={modalClose}>{canEdit ? 'Cancel' : 'Close'}</Button>
+              {canEdit ? (
+                <Button type="submit" variant="contained" disabled={!form.isValid} disableElevation>
+                  {forms.buttons.submit.label}
+                </Button>
+              ) : null}
             </DialogActions>
           </Form>
         </DialogContent>

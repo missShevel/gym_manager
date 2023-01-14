@@ -6,10 +6,11 @@ import ApiError from 'helpers/ApiError';
 export default (err: ApiError, req: Request, res: Response, next: NextFunction) => {
   console.log(err);
 
-  res.status(err.status).json({
+  return res.status(err.status).json({
     success: false,
     status: err.status,
     message: err.message,
+    code: err.code,
     stack: environment.isDevelopment && err.stack,
   });
 };

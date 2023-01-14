@@ -59,7 +59,13 @@ export default class UserController extends BaseController {
         }
       }
       const requiredPermission = RolePermissions[body.role as keyof TRolePermissions].add;
-      if (!isAllowed(user, requiredPermission)) throw new ApiError('Forbidden', 400);
+      if (!isAllowed(user, requiredPermission)) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
       const role = await this.roleService.findByIdOrFail(body.role as string);
       const createdUser = await this.service.create({
         firstName: body.firstName,
@@ -115,7 +121,13 @@ export default class UserController extends BaseController {
       if (query.role === 'TRAINER') {
         requiredPermissions = 'view_trainer';
       }
-      if (!isAllowed(user, requiredPermissions)) throw new ApiError('Forbidden', 400);
+      if (!isAllowed(user, requiredPermissions)) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
 
       let role;
       if (query.role) {
@@ -132,16 +144,51 @@ export default class UserController extends BaseController {
     }
   }
 
+  public async getShortList(req: Request, res: Response, next: NextFunction) {
+    try {
+      const schema = yup.object().shape({
+        role: yup.string().oneOf(ROLES),
+      });
+      const query = await schema.validate(req.query);
+
+      let role;
+      if (query.role) {
+        role = await this.roleService.findByIdOrFail(query.role as string);
+      }
+      const users = await this.service.getAll({
+        role,
+      });
+
+      res.json(users.map((u) => ({
+        id: u.id,
+        firstName: u.firstName,
+        lastName: u.lastName,
+      })));
+    } catch (error) {
+      this.sendError(next, error);
+    }
+  }
+
   public async deleteById(req: Request, res: Response, next: NextFunction) {
     try {
       const { user } = res.locals;
       const userId = req.params.id;
       const userToDelete = await this.service.findById(userId);
       if (!userToDelete) {
-        throw new ApiError(`User with id ${userId} was not found`, 400);
+        throw new ApiError({
+          message: `User with id ${userId} was not found`,
+          status: 400,
+          code: 'USER_NOT_FOUND',
+        });
       }
       const permission = RolePermissions[userToDelete.role.id as keyof TRolePermissions].remove;
-      if (!isAllowed(user, permission)) throw new ApiError('Forbidden', 400);
+      if (!isAllowed(user, permission)) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
 
       await this.service.deleteUser(userToDelete);
 
@@ -158,28 +205,45 @@ export default class UserController extends BaseController {
     const { user } = res.locals;
 
     try {
-      const schema = yup.object().noUnknown(true).shape({
-        firstName: yup.string().required(),
-        lastName: yup.string().required(),
-        email: yup.string().email().required(),
-        sex: yup.string().oneOf(USER_SEX),
-        password: yup.string().min(2).nullable().defined(),
-        fileId: yup.string().uuid().nullable().defined(),
-      });
+      const schema = yup
+        .object()
+        .noUnknown(true)
+        .shape({
+          firstName: yup.string().required(),
+          lastName: yup.string().required(),
+          email: yup.string().email().required(),
+          sex: yup.string().oneOf(USER_SEX),
+          password: yup.string().min(2).nullable().defined(),
+          fileId: yup.string().uuid().nullable().defined(),
+        });
       const body = await schema.validate(req.body);
       const userId = req.params.id;
       let userToupdate = await this.service.findById(userId);
       if (!userToupdate) {
-        throw new ApiError(`User with id ${userId} was not found`, 400);
+        throw new ApiError({
+          message: `User with id ${userId} was not found`,
+          status: 400,
+          code: 'USER_NOT_FOUND',
+        });
       }
       const permission = RolePermissions[userToupdate.role.id as keyof TRolePermissions].edit;
-      if (!isAllowed(user, permission)) throw new ApiError('Forbidden', 400);
+      if (!isAllowed(user, permission)) {
+        throw new ApiError({
+          message: 'Forbidden',
+          status: 403,
+          code: 'PERMISSION_DENIED',
+        });
+      }
       const { fileId } = body;
       let file = null;
       if (fileId) file = await this.fileService.findById(fileId);
 
       if (fileId && !file) {
-        throw new ApiError(`File with id ${fileId} was not found`, 400);
+        throw new ApiError({
+          message: `File with id ${fileId} was not found`,
+          status: 400,
+          code: 'FILE_NOT_FOUND',
+        });
       }
 
       const updateData: IUpdateData = {

@@ -7,10 +7,11 @@ import {
   TableSortLabel,
 } from '@mui/material';
 import { Equipment, File as FileDomain } from 'domains';
-import { formatFileName } from 'helpers';
+import { formatFileName, isAllowed } from 'helpers';
 import { useState } from 'react';
 import FileService from 'services/file';
 import { getStore } from 'store';
+import { useSelector } from 'store/hooks';
 import { deleteEquipment, getEquipments } from 'store/reducers/equipments/thunks';
 import { Button, Paper, Table } from 'ui/components';
 import { IEquipmentsFormInitial } from './form';
@@ -36,6 +37,7 @@ export default function EquipmentsTable({
   type Order = 'asc' | 'desc';
   const [rowData, setRowData] = useState(equipments);
   const [orderDirection, setOrderDirection] = useState<Order>('asc');
+  const { data: user } = useSelector((store) => store.user);
   const getMultiplier = (orderBy: Order) => (orderBy === 'asc' ? 1 : -1);
 
   const sortByCount = (arr, orderBy: Order) => {
@@ -61,7 +63,8 @@ export default function EquipmentsTable({
   const handleDelete = (id: string) => {
     dispatch(deleteEquipment(id))
       .unwrap()
-      .then(() => dispatch(getEquipments()));
+      .catch((e) => dispatch(e.message))
+      .finally(() => dispatch(getEquipments()));
   };
 
   return (
@@ -80,7 +83,7 @@ export default function EquipmentsTable({
               </TableSortLabel>
             </TableCell>
             <TableCell>Details</TableCell>
-            <TableCell />
+            {isAllowed(user, 'remove_equipments') ? <TableCell>Delete</TableCell> : null}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -116,28 +119,30 @@ export default function EquipmentsTable({
               <TableCell component="th" scope="row">
                 {equipment.link}
               </TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  component="th"
-                  scope="row"
-                  sx={{
-                    color: 'error.main',
-                    borderColor: 'error.main',
-                    '&:hover': {
-                      backgroundColor: 'error.main',
-                      color: 'error.contrastText',
+              {isAllowed(user, 'remove_equipments') ? (
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    component="th"
+                    scope="row"
+                    sx={{
+                      color: 'error.main',
                       borderColor: 'error.main',
-                    },
-                  }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleDelete(equipment.id);
-                  }}
-                >
-                  Delete
-                </Button>
-              </TableCell>
+                      '&:hover': {
+                        backgroundColor: 'error.main',
+                        color: 'error.contrastText',
+                        borderColor: 'error.main',
+                      },
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleDelete(equipment.id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              ) : null}
             </TableRow>
           ))}
         </TableBody>

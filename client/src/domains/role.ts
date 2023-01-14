@@ -5,4 +5,4 @@ export interface Role {
 }
 
 export type ROLES = 'MANAGER' | 'TRAINER';
-export const beautifyRole = (role: ROLES) => role === 'MANAGER' ? 'Manager' : 'Trainer';
+export const beautifyRole = (role: ROLES) => (role === 'MANAGER' ? 'Manager' : 'Trainer');

@@ -5,6 +5,7 @@ import ApiError from 'helpers/ApiError';
 import File from 'models/file';
 import Role from 'models/role';
 import User from 'models/user';
+import ClientRepository from 'repositories/client.repository';
 import SessionRepository from 'repositories/session.repository';
 import { Brackets } from 'typeorm';
 import UserRepository from '../repositories/user.repository';
@@ -33,13 +34,15 @@ export interface IUpdateData {
 
 interface ISearchData {
   search?: string;
-  role?: Role
+  role?: Role;
 }
 
 export default class UserService {
   private repository = UserRepository;
 
   private sessionRepository = SessionRepository;
+
+  private clientRepository = ClientRepository;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, class-methods-use-this
   public async signIn(data: ISignInData) {
@@ -54,12 +57,20 @@ export default class UserService {
     });
 
     if (!existingUser) {
-      throw new ApiError("User with such credentials doesn't exist", 400);
+      throw new ApiError({
+        message: "User with such credentials doesn't exist",
+        status: 400,
+        code: 'USER_NOT_EXISTS',
+      });
     }
 
     const passwordsEqual = await areEqual(data.password, existingUser.passwordHash);
     if (!passwordsEqual) {
-      throw new ApiError('Wrong password', 400);
+      throw new ApiError({
+        message: 'Wrong password',
+        status: 400,
+        code: 'WRONG_PASSWORD',
+      });
     }
 
     const session = await this.sessionRepository.save({
@@ -81,7 +92,11 @@ export default class UserService {
     });
 
     if (existingUser) {
-      throw new ApiError('User with such credentials already exists', 400);
+      throw new ApiError({
+        message: 'User with such credentials already exists',
+        status: 400,
+        code: 'USER_EXISTS',
+      });
     }
 
     return this.repository.save(data);
@@ -124,7 +139,37 @@ export default class UserService {
     });
   }
 
+  public async findByRoleAndId(id: string, role: string) {
+    return this.repository.findOne({
+      where: {
+        id,
+        role: {
+          id: role,
+        },
+      },
+      relations: {
+        role: true,
+      },
+    });
+  }
+
   public async deleteUser(user: User) {
+    if (user.role.id === 'TRAINER') {
+      const clients = await this.clientRepository.find({
+        where: {
+          trainer: {
+            id: user.id,
+          },
+        },
+        relations: {
+          trainer: true,
+        },
+      });
+      await this.clientRepository.save(clients.map((c) => ({
+        ...c,
+        trainer: null,
+      })));
+    }
     return this.repository.remove(user);
   }
 
@@ -137,7 +182,11 @@ export default class UserService {
       });
 
       if (existingUser) {
-        throw new ApiError('User with such credentials already exists', 400);
+        throw new ApiError({
+          message: 'User with such credentials already exists',
+          status: 400,
+          code: 'USER_EXISTS',
+        });
       }
     }
     const updateData = this.repository.merge(user, data);

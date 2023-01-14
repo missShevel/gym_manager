@@ -4,12 +4,13 @@ import { Box, Button, Form, Stack, TextField, Typography } from 'ui/components';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 // import * as Actions from 'store/reducers/user/actions';
 import { useFormik } from 'formik';
-import { useDispatch } from 'store/hooks';
 import { signIn } from 'store/reducers/user/thunks';
 import { useNavigate } from 'react-router-dom';
+import { getStore } from 'store';
+import { setMessage } from 'store/reducers/error/actions';
 
 export default function SignInPage() {
-  const dispatch = useDispatch();
+  const { dispatch } = getStore();
   const navigate = useNavigate();
 
   const form = useFormik({
@@ -24,7 +25,10 @@ export default function SignInPage() {
     onSubmit(data) {
       dispatch(signIn(data))
         .unwrap()
-        .then(() => navigate('/equipments'));
+        .then(() => navigate('/equipments'))
+        .catch((e) => {
+          dispatch(setMessage(e.message));
+        });
     },
   });
 

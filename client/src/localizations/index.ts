@@ -38,36 +38,42 @@ export const forms = {
     status: {
       label: 'Status',
     },
+    trainer: {
+      label: 'Trainer',
+    },
   },
   buttons: {
     submit: {
       label: 'Submit',
     },
     logout: {
-      label: 'Вихід',
+      label: 'Logout',
     },
     create: {
-      label: 'Створити',
+      label: 'Create',
     },
   },
 };
 
 export const pages = {
   signIn: {
-    header: 'Вхід',
+    header: 'Sign in',
   },
   equipments: {
-    header: 'Обладнання',
+    header: 'Equipments',
   },
   users: {
     MANAGER: {
-      header: 'Менеджери',
+      header: 'Managers',
     },
     TRAINER: {
-      header: 'Тренери',
+      header: 'Trainers',
     },
   },
   clients: {
-    header: 'Клієнти',
+    header: 'Clients',
+  },
+  schedules: {
+    inWork: 'This page is in development now',
   },
 };

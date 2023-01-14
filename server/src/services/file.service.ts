@@ -15,7 +15,13 @@ export default class FileService {
   }
 
   public findById(id: string | null) {
-    if (id === null) throw new ApiError('Not found', 400);
+    if (id === null) {
+      throw new ApiError({
+        message: 'Not found',
+        status: 400,
+        code: 'FILE_NOT_FOUND',
+      });
+    }
 
     return this.repository.findOneByOrFail({
       id,

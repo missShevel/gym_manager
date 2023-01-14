@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { User } from 'domains';
 import { useEffect, useState } from 'react';
 import FileService from 'services/file';
+import { setMessage } from 'store/reducers/error/actions';
 
 const fileService = new FileService();
 
@@ -18,7 +19,8 @@ export default function Header({ user }: { user: User }) {
   const logOut = () => {
     dispatch(logout())
       .unwrap()
-      .then(() => navigate('/sign-in'));
+      .then(() => navigate('/sign-in'))
+      .catch((e) => dispatch(setMessage(e.message)));
   };
 
   useEffect(() => {

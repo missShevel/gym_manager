@@ -1,6 +1,7 @@
 import { UserSex, UserStatus } from 'absctracts/user';
 import Client from 'models/client';
 import File from 'models/file';
+import User from 'models/user';
 import ClientRepository from '../repositories/client.repository';
 
 interface ICreateClient {
@@ -10,6 +11,7 @@ interface ICreateClient {
   status: UserStatus;
   details: string;
   avatar?: File;
+  trainer?: User | null;
 }
 
 export interface IUpdateClient {
@@ -28,7 +30,12 @@ export default class ClientService {
   }
 
   public async getAll() {
-    return this.repository.find();
+    return this.repository.find({
+      relations: {
+        avatar: true,
+        trainer: true,
+      },
+    });
   }
 
   public async findById(id: string) {
@@ -38,6 +45,7 @@ export default class ClientService {
       },
       relations: {
         avatar: true,
+        trainer: true,
       },
     });
   }
@@ -48,10 +56,17 @@ export default class ClientService {
     return this.repository.save(newClient);
   }
 
-  public async updateClientAvatar(client: Client, avatar: File) {
+  public async updateClientAvatar(client: Client, avatar: File | null) {
     return this.repository.save({
       ...client,
       avatar,
+    });
+  }
+
+  public async updateClientTrainer(client: Client, trainer: User | null) {
+    return this.repository.save({
+      ...client,
+      trainer,
     });
   }
 

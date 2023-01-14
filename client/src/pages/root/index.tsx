@@ -2,6 +2,7 @@ import { User } from 'domains';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'store/hooks';
+import { setMessage } from 'store/reducers/error/actions';
 import { autoLogin } from 'store/reducers/user/thunks';
 
 export default function RootRedirector({ user }: { user: User }) {
@@ -16,7 +17,9 @@ export default function RootRedirector({ user }: { user: User }) {
   };
   useEffect(() => {
     if (!user) {
-      dispatch(autoLogin({ onLoginFail, onLoginSuccess }));
+      dispatch(autoLogin({ onLoginFail, onLoginSuccess }))
+        .unwrap()
+        .catch((e) => dispatch(setMessage(e.message)));
     }
   }, []);
   if (isLoading) return <div>Loading</div>;

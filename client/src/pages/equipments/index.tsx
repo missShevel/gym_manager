@@ -4,12 +4,14 @@ import { getStore } from 'store';
 import { useSelector } from 'store/hooks';
 import { pages } from 'localizations';
 import { createEquipment, getEquipments, updateEquipment } from 'store/reducers/equipments/thunks';
+import { setMessage } from 'store/reducers/error/actions';
+import { errorMapper } from 'helpers';
 import { Box, Typography } from 'ui/components';
 import EquipmentsForm, { IEquipmentsFormInitial } from './components/form';
 import EquipmentsTable from './components/table';
 import EquipmentToolbar from './components/toolbar';
 
-function EquipmentsPage() {
+function EquipmentsPage({ baseRedirect }: { baseRedirect: () => void }) {
   const { dispatch } = getStore();
 
   const { data, isLoading } = useSelector((store) => store.equipment);
@@ -17,7 +19,14 @@ function EquipmentsPage() {
 
   useEffect(() => {
     if (user) {
-      dispatch(getEquipments());
+      dispatch(getEquipments())
+        .unwrap()
+        .catch((e) => {
+          dispatch(setMessage(e.message));
+          if (e.message === errorMapper.PERMISSION_DENIED) {
+            baseRedirect();
+          }
+        });
     }
   }, [user]);
 
@@ -33,6 +42,12 @@ function EquipmentsPage() {
   });
 
   const handleCreateModalOpen = () => {
+    setInitialValues({
+      id: '',
+      name: '',
+      count: 1,
+      link: '',
+    });
     setCreateModalOpen(true);
   };
   const handleUpdateModalOpen = () => {
@@ -79,11 +94,7 @@ function EquipmentsPage() {
         modalClose={handleClose}
         onSubmitAction={handleCreateEquipment}
         modalTitle="Create New Equipment"
-        initialValues={{
-          name: '',
-          count: 1,
-          link: '',
-        }}
+        initialValues={initialValues}
         selectedFile={selectedFile}
         setSelectedFile={setSelectedFile}
         setOldFile={setOldFile}

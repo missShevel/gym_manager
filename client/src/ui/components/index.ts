@@ -1,5 +1,4 @@
 export * from './accordion';
-export * from './alert';
 export * from './avatar';
 export * from './backdrop';
 export * from './badge';
@@ -35,5 +34,4 @@ export * from './toggle-button';
 export * from './tooltip';
 export * from './typography';
 export * from './app-bar';
-
-export { type SxProps } from '@mui/material';
+export type { SxProps } from '@mui/material';

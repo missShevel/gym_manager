@@ -1,12 +1,17 @@
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { getStore } from 'store';
-import { CLIENT_STATUS, File as FileDomain } from 'domains';
+import { beautifyTrainer, CLIENT_STATUS, File as FileDomain } from 'domains';
 import { getClients } from 'store/reducers/client/thunks';
 import { Box, Button, Form, MenuItem, Stack, TextField } from 'ui/components';
 import { forms } from 'localizations';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import UploadImage from 'ui/common/UploadImage';
+import { setMessage } from 'store/reducers/error/actions';
+import { useEffect, useMemo } from 'react';
+import { getUsersShortlist } from 'store/reducers/users/thunks';
+import { useSelector } from 'store/hooks';
+import { isAllowed } from 'helpers';
 
 export interface IClientFormInitial {
   id?: string;
@@ -15,6 +20,7 @@ export interface IClientFormInitial {
   sex: string;
   status: string;
   details: string;
+  trainerId: string | null;
 }
 
 export const ClientFormInitial: IClientFormInitial = {
@@ -22,8 +28,9 @@ export const ClientFormInitial: IClientFormInitial = {
   firstName: '',
   lastName: '',
   sex: '',
-  status: 'Beginner',
+  status: '',
   details: '',
+  trainerId: null,
 };
 
 interface IClientForm {
@@ -48,6 +55,8 @@ export default function ClientForm({
   setOldFile,
 }: IClientForm) {
   const { dispatch } = getStore();
+  const { data: user } = useSelector((store) => store.user);
+  const { data: trainers, isLoading } = useSelector((store) => store.users);
   const form = useFormik({
     initialValues,
     validationSchema: yup
@@ -59,17 +68,28 @@ export default function ClientForm({
         sex: yup.string().strict().trim().required(),
         status: yup.string().strict().oneOf(CLIENT_STATUS).required(),
         details: yup.string().strict(),
+        trainerId: yup.string().uuid().strict().nullable(),
       }),
     onSubmit(data) {
       dispatch(onSubmitAction(data))
         .unwrap()
-        .then(() => {
+        .catch((e) => dispatch(setMessage(e.message)))
+        .finally(() => {
           dispatch(getClients());
           modalClose();
         });
     },
     enableReinitialize: true,
   });
+  useEffect(() => {
+    if (isModalOpen) {
+      dispatch(getUsersShortlist('TRAINER'))
+        .unwrap()
+        .catch((e) => dispatch(setMessage(e.message)));
+    }
+  }, [isModalOpen]);
+  const canEdit = useMemo(() => isAllowed(user, 'edit_clients'), [user]);
+  if (isLoading) return <Box>Loading</Box>;
 
   return (
     <Box>
@@ -87,12 +107,14 @@ export default function ClientForm({
                   justifySelf: 'center',
                 }}
               >
-                <UploadImage
-                  title="Upload image"
-                  setSelectedFile={setSelectedFile}
-                  selectedFile={selectedFile}
-                  onCancelSelection={() => setOldFile(undefined)}
-                />
+                {canEdit ? (
+                  <UploadImage
+                    title="Upload image"
+                    setSelectedFile={setSelectedFile}
+                    selectedFile={selectedFile}
+                    onCancelSelection={() => setOldFile(undefined)}
+                  />
+                ) : null}
               </Stack>
               <Stack gap={2} sx={{ justifySelf: 'right', width: '50%' }}>
                 <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -104,6 +126,7 @@ export default function ClientForm({
                     type="text"
                     label={forms.fields.firstName.label}
                     error={Boolean(form.errors.firstName)}
+                    disabled={!canEdit}
                     helperText={form.errors.firstName}
                     sx={{ width: '100%', marginRight: '5px' }}
                   />
@@ -115,6 +138,7 @@ export default function ClientForm({
                     type="text"
                     label={forms.fields.lastName.label}
                     error={Boolean(form.errors.lastName)}
+                    disabled={!canEdit}
                     helperText={form.errors.lastName}
                     sx={{ width: '100%', marginLeft: '5px' }}
                   />
@@ -128,6 +152,7 @@ export default function ClientForm({
                     type="text"
                     label={forms.fields.sex.label}
                     error={Boolean(form.errors.sex)}
+                    disabled={!canEdit}
                     select
                     sx={{ width: '100%', marginRight: '5px' }}
                   >
@@ -142,6 +167,7 @@ export default function ClientForm({
                     type="text"
                     label={forms.fields.status.label}
                     error={Boolean(form.errors.status)}
+                    disabled={!canEdit}
                     select
                     sx={{ width: '100%', marginLeft: '5px' }}
                   >
@@ -153,7 +179,7 @@ export default function ClientForm({
                 <TextField
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  value={form.values.details}
+                  value={canEdit ? form.values.details : initialValues.details}
                   name="details"
                   type="text"
                   label={forms.fields.details.label}
@@ -161,14 +187,41 @@ export default function ClientForm({
                   helperText={form.errors.details}
                   multiline
                   rows={4}
+                  disabled={!canEdit}
                 />
+                <TextField
+                  onChange={form.handleChange}
+                  onBlur={form.handleBlur}
+                  value={form.values.trainerId}
+                  name="trainerId"
+                  type="text"
+                  label={forms.fields.trainer.label}
+                  error={Boolean(form.errors.trainerId)}
+                  disabled={!canEdit}
+                  select
+                  sx={{ width: '100%', marginLeft: '5px' }}
+                >
+                  <MenuItem value={null}> </MenuItem>
+                  {trainers.map((trainer) => (
+                    <MenuItem value={trainer.id}>{beautifyTrainer(trainer)}</MenuItem>
+                  ))}
+                </TextField>
               </Stack>
             </Box>
             <DialogActions>
-              <Button onClick={modalClose}>Cancel</Button>
-              <Button type="submit" variant="contained" disabled={!form.isValid} disableElevation>
-                {forms.buttons.submit.label}
+              <Button
+                onClick={() => {
+                  modalClose();
+                  form.setFieldValue('trainerId', null);
+                }}
+              >
+                {canEdit ? 'Cancel' : 'Close'}
               </Button>
+              {canEdit ? (
+                <Button type="submit" variant="contained" disabled={!form.isValid} disableElevation>
+                  {forms.buttons.submit.label}
+                </Button>
+              ) : null}
             </DialogActions>
           </Form>
         </DialogContent>

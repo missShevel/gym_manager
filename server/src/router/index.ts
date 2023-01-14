@@ -5,7 +5,6 @@ import clientsRouter from './clients';
 import equipmentRouter from './equipments';
 import fileRouter from './files';
 
-
 const router = Router();
 
 router.use('/users', userRouter);
