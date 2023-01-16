@@ -17,7 +17,7 @@ const database = new DataSource({
 
   migrationsTableName: 'TypeORM_migrations',
   migrations: [`${baseMigrationFolder}/*.{ts,js}`],
-  migrationsRun: true,
+  // migrationsRun: true,
 
   logging: ['error', 'migration'],
 });

@@ -4,9 +4,12 @@ import multer from 'multer';
 
 import FileController from 'controllers/file.controller';
 import path from 'path';
+import environment from 'environment';
+
+const filesFolder =  environment.NODE_ENV === 'production' ? 'dist/files' : 'files';
 
 const storage = multer.diskStorage({
-  destination: (req, res, cb) => cb(null, 'files/'),
+  destination: (req, res, cb) => cb(null, filesFolder),
   filename: (req, res, cb) => {
     const ext = path.extname(res.originalname);
     cb(null, v4() + ext);

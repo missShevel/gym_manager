@@ -5,6 +5,7 @@ import FileService from 'services/file.service';
 import path from 'path';
 import ApiError from 'helpers/ApiError';
 import BaseController from './Base';
+import environment from 'environment';
 
 export default class FileController extends BaseController {
   private service = new FileService();
@@ -45,7 +46,8 @@ export default class FileController extends BaseController {
     try {
       const { fileId } = req.params;
       const file = await this.service.findById(fileId);
-      const filePath = `files/${file.id}${file.extention}`;
+      const filesFolder = environment.NODE_ENV === 'production' ? 'dist/files' : 'files';
+      const filePath = `${filesFolder}/${file.id}${file.extention}`;
 
       const fileStream = await fse.createReadStream(filePath);
       fileStream.pipe(res);
