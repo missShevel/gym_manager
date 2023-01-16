@@ -61,7 +61,7 @@ export default function UsersForm({
       lastName: yup.string().strict().trim().required(),
       email: yup.string().strict().email().trim().required(),
       sex: yup.string().strict().trim().required(),
-      password: yup.string().strict().trim().required(),
+      password: yup.string().strict().trim(),
     }),
     onSubmit(data) {
       dispatch(onSubmitAction(data))
@@ -155,6 +155,7 @@ export default function UsersForm({
                   label={forms.fields.password.label}
                   error={Boolean(form.errors.password)}
                   helperText={form.errors.password}
+                  autoComplete="new-password"
                 />
                 <TextField
                   onChange={form.handleChange}
