@@ -1,0 +1,28 @@
+{
+  "extends": ["airbnb", "airbnb-typescript", "plugin:react/jsx-runtime"],
+  "rules": {
+    "react/prop-types": "off",
+    "react/jsx-props-no-spreading": "off",
+    "no-restricted-exports": "off",
+    "@typescript-eslint/indent": "off",
+    "implicit-arrow-linebreak": "off",
+    "operator-linebreak": "off",
+    "react/require-default-props": "off",
+    "object-curly-newline": "off",
+    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }],
+    "no-console": "off",
+    "newline-per-chained-call": "off",
+    "consistent-return": "off",
+    "no-nested-ternary": "off",
+    "react/jsx-boolean-value": "off",
+    "no-confusing-arrow": "off",
+    "react/jsx-wrap-multilines": "off",
+    "import/prefer-default-export": "off",
+    "react/no-array-index-key": "off",
+    "jsx-a11y/aria-role": "off",
+    "function-paren-newline": "off"
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
+}

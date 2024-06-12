@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ADMINISTRATOR",
+    "name": "System Administrator",
+    "permissions": [
+      "add_managers",
+      "view_managers",
+      "edit_managers",
+      "remove_managers",
+
+      "add_trainer",
+      "view_trainer",
+      "edit_trainer",
+      "remove_trainer",
+
+      "add_clients",
+      "view_clients",
+      "edit_clients",
+      "remove_clients",
+
+      "add_schedules",
+      "view_schedules",
+      "edit_schedules",
+      "remove_schedules",
+
+      "view_equipments",
+      "add_equipments",
+      "edit_equipments",
+      "remove_equipments"
+    ]
+  },
+  {
+    "id": "MANAGER",
+    "name": "Manager",
+    "permissions": [
+      "add_trainer",
+      "view_trainer",
+      "edit_trainer",
+      "remove_trainer",
+
+      "add_clients",
+      "view_clients",
+      "edit_clients",
+      "remove_clients",
+
+      "add_schedules",
+      "view_schedules",
+      "edit_schedules",
+      "remove_schedules",
+
+      "view_equipments",
+      "add_equipments",
+      "edit_equipments",
+      "remove_equipments"
+    ]
+  },
+  {
+    "id": "TRAINER",
+    "name": "Trainer",
+    "permissions": ["view_clients", "view_schedules_own", "edit_schedules_own", "view_equipments"]
+  }
+]

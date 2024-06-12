@@ -1,0 +1,37 @@
+[
+  {
+    "id": "a7e1f016-2bdd-43c0-8959-475e7128c68c",
+    "name": "horizontal_bar",
+    "extention": ".jpg"
+  },
+  {
+    "id": "e83bc92d-3e30-4fac-b3e0-a496a4c77361",
+    "name": "treadmill",
+    "extention": ".png"
+  },
+  {
+    "id": "f4bd260e-3f01-43df-ae09-2e07416c1fce",
+    "name": "admin",
+    "extention": ".jpeg"
+  },
+  {
+    "id": "b5e6cda7-028c-423d-a59c-a772fbc02a8c",
+    "name": "manager",
+    "extention": ".jpg"
+  },
+  {
+    "id": "2c9155f7-ea1e-4a47-823e-bae943522caa",
+    "name": "trainer",
+    "extention": ".jpg"
+  },
+  {
+    "id": "dc3834f1-b266-4ca1-8c55-f3fd6c2419d2",
+    "name": "client1",
+    "extention": ".jpg"
+  },
+  {
+    "id": "0233d51b-6b14-4923-8680-bca819588467",
+    "name": "client1",
+    "extention": ".jpg"
+  }
+]
